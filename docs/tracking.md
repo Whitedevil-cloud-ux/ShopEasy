@@ -45,3 +45,27 @@ To ensure every endpoint returns a consistent response structure, making fronten
 ### Status
 
 ✅ Completed
+
+
+## Feature
+
+API Error Handling
+
+### What
+
+Introduced a reusable `ApiError` class and centralized error middleware.
+
+### Why
+
+To standardize error responses and remove duplicate error-handling logic from controllers.
+
+### How
+
+- Created `ApiError`
+- Added `error.middleware.js`
+- Added `notFound.middleware.js`
+- Registered both in `app.js`
+
+### Status
+
+✅ Completed

@@ -19,3 +19,22 @@ A reusable wrapper that ensures every successful API returns the same JSON struc
   message,
   data
 }
+
+# ApiError
+
+## What?
+
+A custom error class extending JavaScript's built-in `Error`.
+
+## Why?
+
+- Standardized errors
+- Easier debugging
+- Cleaner controllers
+- Centralized error handling
+
+## Benefits
+
+- Every API returns the same error format.
+- Logging happens in one place.
+- Business logic stays focused on business rules.
