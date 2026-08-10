@@ -69,3 +69,33 @@ To standardize error responses and remove duplicate error-handling logic from co
 ### Status
 
 ✅ Completed
+
+## Feature
+
+API Routing Architecture & Versioning
+
+### What
+
+Moved API routes into a dedicated routing layer and introduced `/api/v1`.
+
+### Why
+
+To keep `app.js` focused on application configuration and make the API scalable as new modules are added.
+
+### How
+
+- Created `routes/index.js`
+- Created `routes/health.routes.js`
+- Moved the health endpoint into its own route module
+- Mounted the router under `/api/v1`
+- Kept 404 and global error middleware after all routes
+
+### Result
+
+Health endpoint:
+
+GET /api/v1/health
+
+### Status
+
+✅ Completed

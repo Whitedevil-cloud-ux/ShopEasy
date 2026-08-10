@@ -1,0 +1,8 @@
+DB: abhishekchoudhary38808_db_user
+Password: yy0vZKbhsvqvT8el
+
+new password: HncW8a3OA4YCB1dA
+
+Ip: 103.77.42.254
+
+connection string: mongodb+srv://abhishekchoudhary38808_db_user:yy0vZKbhsvqvT8el@shopeasy-cluster.dxqypke.mongodb.net/?appName=ShopEasy-cluster
