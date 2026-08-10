@@ -1,19 +1,23 @@
-require("dotenv").config();
+const env = require("./env");
 
 const config = {
   server: {
-    port: process.env.PORT || 5000,
-    environment: process.env.NODE_ENV || "development",
+    port: env.PORT ,
+    environment: env.NODE_ENV,
   },
 
   database: {
-    mongoURI: process.env.MONGO_URI,
+    mongoURI: env.MONGO_URI,
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET,
-    refreshSecret: process.env.JWT_REFRESH_SECRET,
+    secret: env.JWT_SECRET,
+    refreshSecret: env.JWT_REFRESH_SECRET,
   },
+
+  logging: {
+    level: env.LOG_LEVEL,
+  }
 };
 
 module.exports = config;

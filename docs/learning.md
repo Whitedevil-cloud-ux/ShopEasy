@@ -159,3 +159,41 @@ JSON logs can be easily parsed, searched, filtered, and processed by systems suc
 ## Key Takeaway
 
 Application logs should be structured and useful for diagnosing real production problems.
+
+# Graceful Shutdown
+
+## What?
+
+Graceful shutdown is the controlled termination of an application where active resources are cleaned up before the process exits.
+
+## Why?
+
+Applications running in production environments may receive termination signals during:
+
+- Docker container replacement
+- EC2 deployments
+- CI/CD deployments
+- Server restarts
+- Application updates
+
+## Important Signals
+
+### SIGINT
+
+Commonly generated when a process is interrupted manually, such as Ctrl+C.
+
+### SIGTERM
+
+A standard termination signal commonly used by process managers, containers, and orchestration systems.
+
+## Shutdown Flow
+
+SIGTERM / SIGINT
+→ Stop accepting new requests
+→ Finish active requests
+→ Close MongoDB
+→ Exit
+
+## Key Takeaway
+
+Production applications should cleanly release resources before terminating.

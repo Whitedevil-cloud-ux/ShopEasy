@@ -10,11 +10,28 @@ const connectDB = async() => {
         logger.info(`Database Host: ${connection.connection.host}`);
         logger.info(`Database Name: ${connection.connection.name}`);
     }catch (error) {
-        logger.error("MongoDB connection failed");
-        logger.error(error.message);
+        logger.error("MongoDB connection failed", {
+            error: error.message,
+            stack: error.stack,
+        });
 
-        process.exit(1);
+        throw error;
     }
 };
 
-module.exports = connectDB;
+const disconnectDB = async() => {
+    try {
+        await mongoose.connection.close();
+
+        logger.info("MongoDB connection closed");
+    }catch(error){
+        logger.error("MongoDB shutdown failed", {
+            error: error.message,
+            stack: error.stack,
+        });
+
+        throw error;
+    }
+};
+
+module.exports = { connectDB, disconnectDB };

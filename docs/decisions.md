@@ -45,3 +45,27 @@ Using one logging system provides:
 ### Status
 
 Accepted
+
+## ADR-005
+
+### Decision
+
+Implement graceful shutdown handling for the HTTP server and MongoDB connection.
+
+### Why
+
+ShopEasy will eventually run in Docker and AWS infrastructure where processes can receive SIGTERM during deployments and container replacement.
+
+### Consequences
+
+The application now:
+
+- Handles SIGINT and SIGTERM.
+- Stops accepting new HTTP requests.
+- Allows active requests to finish.
+- Closes MongoDB connections.
+- Exits cleanly.
+
+### Status
+
+Accepted

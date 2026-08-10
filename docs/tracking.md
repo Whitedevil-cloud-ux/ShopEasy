@@ -191,3 +191,34 @@ To capture structured request information and prepare the application for produc
 ### Status
 
 ✅ Completed
+
+## Feature
+
+Graceful Shutdown
+
+### What
+
+Implemented graceful shutdown handling for the HTTP server and MongoDB connection.
+
+### Why
+
+The application must safely release resources when the process receives termination signals from Docker, AWS, CI/CD systems, or the operating system.
+
+### How
+
+- Added `disconnectDB()` to close the MongoDB connection.
+- Updated `connectDB()` to throw startup errors instead of terminating the process directly.
+- Added SIGINT handling.
+- Added SIGTERM handling.
+- HTTP server stops accepting new connections.
+- Existing requests are allowed to complete.
+- MongoDB connection is closed.
+- Application exits after cleanup.
+
+### Testing
+
+Verified graceful shutdown using Ctrl+C / SIGINT during local development.
+
+### Status
+
+✅ Completed

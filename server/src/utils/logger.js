@@ -1,8 +1,8 @@
-const { createLogger, format, transports } = require("winston");
 const winston = require("winston");
+const config = require("../config/config");
 
 const logger = winston.createLogger({
-        level: process.env.LOG_LEVEL || "info",
+        level: config.logging.level,
 
         format: winston.format.combine(
             winston.format.timestamp({
