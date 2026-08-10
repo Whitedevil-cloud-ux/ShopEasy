@@ -99,3 +99,34 @@ GET /api/v1/health
 ### Status
 
 ✅ Completed
+
+
+## Feature
+
+Async Handler
+
+### What
+
+Created a reusable asyncHandler utility for asynchronous controllers.
+
+### Why
+
+To avoid repetitive try/catch blocks in every asynchronous controller and forward errors to the centralized error middleware.
+
+### How
+
+Created `src/utils/asyncHandler.js`.
+
+The utility wraps an asynchronous function and forwards rejected promises to Express's `next()` middleware.
+
+### Testing
+
+Tested:
+- ApiError
+- Unexpected JavaScript Error
+
+Both were correctly handled by the global error middleware.
+
+### Status
+
+✅ Completed

@@ -68,3 +68,26 @@ It prevents breaking existing clients when introducing incompatible API changes.
 ## Key Takeaway
 
 API versioning is particularly useful when APIs have external consumers or need backward compatibility.
+
+# Async Handler
+
+## What?
+
+A higher-order function that wraps asynchronous Express handlers and forwards rejected promises to the error middleware.
+
+## Why?
+
+Without it, controllers often contain repetitive try/catch blocks.
+
+## Flow
+
+Request
+→ Controller
+→ Promise rejection
+→ next(error)
+→ Global Error Middleware
+→ Response
+
+## Key Takeaway
+
+Keep business logic separate from repetitive error-handling boilerplate.
