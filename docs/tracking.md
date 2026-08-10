@@ -130,3 +130,33 @@ Both were correctly handled by the global error middleware.
 ### Status
 
 ✅ Completed
+
+## Feature
+
+Request ID Middleware
+
+### What
+
+Added a unique request identifier to every incoming HTTP request.
+
+### Why
+
+Request IDs allow us to trace individual requests through application logs and simplify debugging in production.
+
+### How
+
+- Used Node.js `crypto.randomUUID()`.
+- Stored the ID on `req.requestId`.
+- Returned the ID using the `X-Request-ID` response header.
+- Accepted an existing `X-Request-ID` from clients for request propagation.
+
+### Testing
+
+Verified:
+- Every request receives a unique request ID.
+- Request ID is returned in the response headers.
+- Existing request IDs can be propagated.
+
+### Status
+
+✅ Completed

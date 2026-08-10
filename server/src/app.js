@@ -7,6 +7,7 @@ const apiRoutes = require("./routes");
 const ApiResponse = require("./utils/ApiResponse");
 const notFound = require("./middleware/notFound.middleware");
 const errorHandler = require("./middleware/error.middleware");
+const requestId = require("./middleware/requestId.middleware");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
+app.use(requestId);
 
 // Routes
 app.use("/api/v1", apiRoutes);

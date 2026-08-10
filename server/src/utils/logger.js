@@ -8,8 +8,10 @@ const logger = createLogger({
             format: "YYYY-MM-DD HH:mm:ss",
         }),
         format.errors({ stack: true }),
-        format.printf(({ timestamp, level, message }) => {
-            return `[${timestamp}] ${level.toUpperCase()}: ${message}`;
+        format.printf(({ timestamp, level, message, requestId }) => {
+            return `[${timestamp}] ${level.toUpperCase()}${
+                requestId ? ` [$[requestId]]` : ""
+            }: ${message}`;
         })
     ),
 
