@@ -91,3 +91,71 @@ Request
 ## Key Takeaway
 
 Keep business logic separate from repetitive error-handling boilerplate.
+
+# Request ID
+
+## What?
+
+A unique identifier associated with an HTTP request.
+
+## Why?
+
+It allows developers to trace a request through logs and distributed services.
+
+## Example
+
+Request:
+
+GET /api/v1/orders
+
+Request ID:
+
+8f72a1c4-...
+
+## Production Use
+
+Request IDs become especially useful with:
+
+- Microservices
+- Load balancers
+- Reverse proxies
+- CloudWatch
+- Distributed tracing
+
+## Key Takeaway
+
+A request ID connects application events belonging to the same request.
+
+# HTTP Request Logging
+
+## What?
+
+HTTP request logging records information about incoming HTTP requests and their resulting responses.
+
+## Why?
+
+It helps with:
+
+- Debugging
+- Performance analysis
+- Security investigations
+- Production monitoring
+- Request tracing
+
+## Information Captured
+
+- Request ID
+- HTTP method
+- URL
+- Status code
+- Response time
+- IP address
+- User-Agent
+
+## Why Structured Logs?
+
+JSON logs can be easily parsed, searched, filtered, and processed by systems such as AWS CloudWatch.
+
+## Key Takeaway
+
+Application logs should be structured and useful for diagnosing real production problems.

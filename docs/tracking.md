@@ -160,3 +160,34 @@ Verified:
 ### Status
 
 ✅ Completed
+
+## Feature
+
+HTTP Request Logging
+
+### What
+
+Replaced Morgan with a centralized Winston-based HTTP request logger.
+
+### Why
+
+To capture structured request information and prepare the application for production observability and AWS CloudWatch integration.
+
+### How
+
+- Removed Morgan.
+- Updated Winston to output structured JSON logs.
+- Created `requestLogger.middleware.js`.
+- Captured:
+  - Request ID
+  - HTTP method
+  - URL
+  - Status code
+  - Response time
+  - IP address
+  - User-Agent
+- Used the response `finish` event to calculate actual request duration.
+
+### Status
+
+✅ Completed

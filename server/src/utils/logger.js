@@ -1,22 +1,19 @@
 const { createLogger, format, transports } = require("winston");
+const winston = require("winston");
 
-const logger = createLogger({
-    level: "info",
+const logger = winston.createLogger({
+        level: process.env.LOG_LEVEL || "info",
 
-    format: format.combine(
-        format.timestamp({
-            format: "YYYY-MM-DD HH:mm:ss",
-        }),
-        format.errors({ stack: true }),
-        format.printf(({ timestamp, level, message, requestId }) => {
-            return `[${timestamp}] ${level.toUpperCase()}${
-                requestId ? ` [$[requestId]]` : ""
-            }: ${message}`;
-        })
+        format: winston.format.combine(
+            winston.format.timestamp({
+                format: "YYYY-MM-DD HH:mm:ss",
+            }),
+            winston.format.errors({ stack: true }),
+            winston.format.json()
     ),
 
     transports: [
-        new transports.Console(),
+        new winston.transports.Console(),
     ],
 });
 
