@@ -224,3 +224,49 @@ Verified graceful shutdown using Ctrl+C / SIGINT during local development.
 ### Status
 
 ✅ Completed
+
+Date: 11/08/2026
+
+## Feature
+
+Authentication - User Model Testing
+
+### What
+
+Tested the User model against MongoDB Atlas.
+
+### Why
+
+To verify that the model, password hashing, password comparison, validation, and database persistence work correctly before building the authentication API.
+
+### How
+
+- Created a temporary test user.
+- Verified MongoDB persistence.
+- Verified bcrypt password hashing.
+- Verified correct password comparison.
+- Verified incorrect password rejection.
+- Removed temporary test data after verification.
+
+### Issues Resolved
+
+- Fixed Mongoose async `pre("save")` middleware usage.
+- Fixed MongoDB write concern typo from `majority` to `majority`.
+
+### Status
+
+✅ Completed
+
+### Final Test Result
+
+- New user registration: ✅ 201 Created
+- User persisted in MongoDB Atlas: ✅
+- Duplicate email: ✅ 409 Conflict
+- Password hashing: ✅
+- Password excluded from response: ✅
+- Public admin role injection prevented: ✅
+- MongoDB write concern configuration: ✅
+
+### Status
+
+✅ Completed

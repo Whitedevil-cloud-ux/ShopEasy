@@ -8,6 +8,7 @@ const notFound = require("./middleware/notFound.middleware");
 const errorHandler = require("./middleware/error.middleware");
 const requestId = require("./middleware/requestId.middleware");
 const requestLogger = require("./middleware/requestLogger.middleware");
+const authRoutes = require("./routes/auth.routes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(requestLogger);
 
 // Routes
 app.use("/api/v1", apiRoutes);
+app.use("/api/v1/auth", authRoutes);
 
 // 404 middleware
 app.use(notFound);
