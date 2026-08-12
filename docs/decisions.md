@@ -69,3 +69,15 @@ The application now:
 ### Status
 
 Accepted
+
+## 2026-08-12 — Authentication Architecture Decisions
+
+### JWT Payload
+Decision:
+JWT payload will contain the user's MongoDB `_id` and `role`.
+
+```js
+{
+    userId,
+    role
+}

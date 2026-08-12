@@ -197,3 +197,40 @@ SIGTERM / SIGINT
 ## Key Takeaway
 
 Production applications should cleanly release resources before terminating.
+
+## 2026-08-12 — Authentication & JWT
+
+### Learned
+- JWT authentication flow from login to protected routes.
+- `jwt.sign()` creates a JWT using a payload and `JWT_SECRET`.
+- JWT payload currently contains:
+  - `userId`
+  - `role`
+- `jwt.verify()` validates the token signature and expiration and returns the decoded payload.
+- `Authorization` header uses the format:
+  `Bearer <token>`
+- `req.headers.authorization` is used to access the Authorization header.
+- `access.split(" ")[1]` extracts the JWT from the Bearer token.
+- `req.user = decoded` makes authenticated user information available to downstream controllers.
+- Mongoose `select: false` can hide sensitive fields such as passwords by default.
+- `.select("+password")` explicitly includes the password only when authentication requires it.
+- Authentication business logic belongs in the service layer, while controllers handle HTTP requests/responses.
+- Authentication middleware should protect routes that require an already-authenticated user; login itself should not use JWT middleware.
+- `express-validator` validates request data before it reaches the controller.
+
+### Debugging Learned
+- A registration request failed because `confirmPassword` was required by the validator but missing from the Postman request.
+- Login initially failed because `password` was configured with `select: false` in the User model.
+- Fixed the login query using:
+  `User.findOne({ email }).select("+password")`
+- Verified registration, login, JWT creation, JWT verification, and a protected `/me` endpoint through Postman.
+
+### Important Mental Model
+Register:
+Request → Validation → Controller → Service → Database
+
+Login:
+Request → Validation → Controller → Service → Password Verification → JWT Creation → Response
+
+Protected Request:
+Request + Bearer JWT → Auth Middleware → JWT Verification → `req.user` → Controller

@@ -1,3 +1,4 @@
+const { success } = require("zod");
 const authService = require("../services/auth.service");
 const logger = require("../utils/logger");
 
@@ -28,4 +29,42 @@ const register = async (req, res, next) => {
     }
 };
 
-module.exports = { register, };
+const login = async (req, res, next) => {
+    try {
+        const result = await authService.loginUser({
+            email: req.body.email,
+            password: req.body.password,
+        });
+
+        logger.info("Login successful", {
+            requestId: req.requestId,
+            userId: result.id.toString(),
+        });
+
+        return res.status(200).json({
+            success: true,
+            statusCode: 200,
+            message: "Login successful",
+            data: result,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+const getMe = async(req, res, next) => {
+    try {
+        return res.status(200).json({
+            success: true,
+            statusCode: 200,
+            message: "Authenticated user",
+            data: {
+                user: req.user,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+module.exports = { register, login, getMe };

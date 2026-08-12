@@ -47,4 +47,27 @@ const registerValidator = [
     .withMessage("Please provide a valid Indian mobile number"),
 ];
 
-module.exports = { registerValidator, };
+const loginValidator = [
+    body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email address"),
+
+    body("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 8})
+    .withMessage("Password must contain at least 8 characters")
+    .matches(/[A-Z]/)
+    .withMessage("Password must contain at least one uppercase letter")
+    .matches(/[a-z]/)
+    .withMessage("Password must contain at least one lowercase letter")
+    .matches(/[0-9]/)
+    .withMessage("Password must contain at least one number")
+    .matches(/[^A-Za-z0-9]/)
+    .withMessage("Password must contain at least one special character"),
+]
+
+module.exports = { registerValidator, loginValidator };

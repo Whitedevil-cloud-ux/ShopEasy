@@ -270,3 +270,64 @@ To verify that the model, password hashing, password comparison, validation, and
 ### Status
 
 ✅ Completed
+
+## 2026-08-12 — ShopEasy Authentication Progress
+
+### Completed
+- [x] User registration service
+- [x] User login service
+- [x] Password comparison using bcrypt
+- [x] JWT token generation
+- [x] JWT payload with `userId` and `role`
+- [x] JWT authentication middleware
+- [x] Authorization header parsing
+- [x] JWT verification
+- [x] `req.user` population
+- [x] Login controller
+- [x] Login validation
+- [x] Authentication routes
+- [x] Protected `/me` endpoint
+- [x] Tested registration using Postman
+- [x] Tested login using Postman
+- [x] Tested protected endpoint using Bearer JWT
+- [x] Debugged Mongoose `select: false` password issue
+
+### Authentication Flow Status
+
+Registration: ✅ Working
+
+Login: ✅ Working
+
+JWT Generation: ✅ Working
+
+JWT Verification: ✅ Working
+
+Protected Routes: ✅ Working
+
+Role included in JWT: ✅ Working
+
+### Current Authentication Architecture
+
+routes
+↓
+validation middleware
+↓
+controller
+↓
+service
+↓
+model / database
+
+Protected routes additionally use:
+
+authMiddleware
+↓
+jwt.verify()
+↓
+req.user
+
+### Next Session
+- Implement authorization/role checks on top of authentication.
+- Continue building authenticated user-side features.
+- Use `req.user.userId` to identify the currently authenticated user.
+- Begin user-specific resources such as profile, cart, orders, etc.

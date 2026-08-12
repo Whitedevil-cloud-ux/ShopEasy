@@ -6,3 +6,17 @@ new password: HncW8a3OA4YCB1dA
 Ip: 103.77.42.254
 
 connection string: mongodb+srv://abhishekchoudhary38808_db_user:yy0vZKbhsvqvT8el@shopeasy-cluster.dxqypke.mongodb.net/?appName=ShopEasy-cluster
+
+
+Powershell commands to check whether the code is pushed to github: 
+PS C:\WINDOWS\System32> cd C:\Users\ASUS\OneDrive\Documents\ShopEasy (access the folder)
+PS C:\Users\ASUS\OneDrive\Documents\ShopEasy> git status (Check the status)
+ git log --oneline --decorate -5 (check the last 5 push in the repository)
+PS C:\Users\ASUS\OneDrive\Documents\ShopEasy> git remote -v (Check the version)
+PS C:\Users\ASUS\OneDrive\Documents\ShopEasy> git branch -M main (This command is used to change the branch name)
+PS C:\Users\ASUS\OneDrive\Documents\ShopEasy> git push -u origin main (It is used to push the code)
+PS C:\Users\ASUS\OneDrive\Documents\ShopEasy> git fetch origin (This command is used to fetch the branch name)
+
+user for testing in mongodb: 
+"email": "jwt.test@example.com",
+  "password": "Test@1234",
