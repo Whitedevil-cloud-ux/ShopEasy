@@ -89,7 +89,7 @@ const userSchema = new mongoose.Schema(
 // Password hashing
 userSchema.pre("save", async function (next) {
     if(!this.isModified("password")){
-        return next();
+        return;
     }
 
     const saltRounds = 12;
