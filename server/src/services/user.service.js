@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 
 const getProfile = async (userId) => {
     const user = await User.findById(userId);
@@ -40,4 +41,30 @@ const updateProfile = async (userId, updates) => {
     return user;
 };
 
-module.exports = { getProfile, updateProfile };
+const changePassword = async (userId, currentPassword, newPassword) => {
+    const user = await User.findById(userId).select("+password");
+    if(!user) {
+        const error = new Error("User not found");
+        error.statusCode = 404;
+        error.code = "NOT_FOUND";
+
+        throw error;
+    }
+
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if(!isPasswordValid) {
+        const error = new Error("Oops, you have entered the wrong password. Please try again.");
+        error.statusCode = 401;
+        error.code = "INVALID_PASSWORD";
+
+        throw error;
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+
+    return user;
+}
+
+module.exports = { getProfile, updateProfile, changePassword };

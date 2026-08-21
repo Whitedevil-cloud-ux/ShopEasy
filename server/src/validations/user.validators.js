@@ -44,4 +44,34 @@ const updateProfileValidation = [
         .withMessage("Country cannot exceed 100 characters"),
 ];
 
-module.exports = { updateProfileValidation };
+const updatePasswordValidation = [
+    body("currentPassword")
+        .notEmpty()
+        .withMessage("Current password is required"),
+
+    body("newPassword")
+        .notEmpty()
+        .trim()
+        .isLength({ min: 8 })
+        .withMessage("New password must be at least 8 characters long")
+        .matches(/[A-Z]/)
+        .withMessage("Password must contain at least one uppercase letter")
+        .matches(/[a-z]/)
+        .withMessage("Password must contain at least one lowercase letter")
+        .matches(/[0-9]/)
+        .withMessage("Password must contain at least one number")
+        .matches(/[^A-Za-z0-9]/)
+        .withMessage("Password must contain at least one special character"),
+
+    body("confirmPassword")
+        .notEmpty()
+        .withMessage("Confirm password is required")
+        .custom((confirmPassword, { req }) => {
+            if(confirmPassword !== req.body.newPassword) {
+                throw new Error("Passwords do not match");
+            }
+            return true;
+        })
+]
+
+module.exports = { updateProfileValidation, updatePasswordValidation };

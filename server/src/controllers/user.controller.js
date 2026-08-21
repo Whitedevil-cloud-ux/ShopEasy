@@ -32,4 +32,17 @@ const updateProfile = async (req, res, next) => {
         next(error);
     }
 }
-module.exports = { getProfile, updateProfile };
+
+const updatePassword = async (req, res, next) => {
+    try {
+        const user = await userService.changePassword(req.user.userId, req.body.currentPassword, req.body.newPassword);
+        return res.status(200).json({
+            success: true,
+            message: "Password updated successfully",
+            statusCode: 200,
+        });
+    }catch (error) {
+        next(error);
+    }
+}
+module.exports = { getProfile, updateProfile, updatePassword };
