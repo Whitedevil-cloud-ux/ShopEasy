@@ -331,3 +331,57 @@ req.user
 - Continue building authenticated user-side features.
 - Use `req.user.userId` to identify the currently authenticated user.
 - Begin user-specific resources such as profile, cart, orders, etc.
+
+## 2026-08-21 — Authentication & User Management Progress
+
+### Completed
+
+- [x] JWT authentication implemented
+- [x] JWT token generated during login
+- [x] JWT authentication middleware implemented
+- [x] Protected `/auth/me` route tested successfully
+- [x] Role-based authorization middleware implemented
+- [x] Admin/user role access tested successfully
+- [x] User profile retrieval implemented
+- [x] User profile update implemented
+- [x] Nested address update implemented
+- [x] Password change functionality implemented
+- [x] Current password verification implemented
+- [x] New password validation implemented
+- [x] Confirm password validation implemented
+- [x] Password hashing through Mongoose `pre("save")` middleware
+- [x] Old password rejected after password change
+- [x] New password verified successfully after password change
+- [x] All implemented features tested through Postman
+- [x] Changes committed and pushed to GitHub
+
+### Current Backend Status
+
+Authentication and user-management foundation is functional.
+
+Current flow:
+
+Request
+→ Route
+→ Authentication/Authorization
+→ Validation
+→ Controller
+→ Service
+→ Model/Database
+→ Response
+
+### Latest Completed Feature
+
+**Change Password**
+
+Endpoint:
+
+`PUT /api/v1/users/change-password`
+
+Verified:
+- Correct current password → update succeeds
+- Incorrect current password → rejected
+- Invalid new password → validation fails
+- Mismatched confirmation password → validation fails
+- Old password after update → login rejected
+- New password after update → login succeeds

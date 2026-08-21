@@ -234,3 +234,54 @@ Request → Validation → Controller → Service → Password Verification → 
 
 Protected Request:
 Request + Bearer JWT → Auth Middleware → JWT Verification → `req.user` → Controller
+
+## Authentication & User Management — Lessons Learned
+
+### JWT Authentication
+
+Learned how JWT authentication works across the request lifecycle:
+
+1. User logs in
+2. Server verifies credentials
+3. Server generates JWT
+4. Client sends JWT using `Authorization: Bearer <token>`
+5. Authentication middleware verifies the token
+6. User information is attached to `req.user`
+7. Protected controllers/services use the authenticated user ID
+
+### Role-Based Authorization
+
+Learned that authentication and authorization are different:
+
+- Authentication → "Who are you?"
+- Authorization → "Are you allowed to do this?"
+
+Implemented role-based access using the authenticated user's role.
+
+### Express Validator
+
+Learned how to create reusable validation rules.
+
+Important concepts:
+
+- `body()`
+- `.notEmpty()`
+- `.isLength()`
+- `.matches()`
+- `.custom()`
+- `validationResult()`
+
+### Custom Validation
+
+`custom()` is useful when validation depends on another field.
+
+Example:
+
+```js
+.custom((confirmPassword, { req }) => {
+    if (confirmPassword !== req.body.newPassword) {
+        throw new Error("Passwords do not match");
+    }
+
+    return true;
+})
