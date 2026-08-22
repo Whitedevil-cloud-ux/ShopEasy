@@ -162,3 +162,99 @@ Keep the User password field configured with:
 
 ```js
 select: false
+
+Date: 22/08/2026
+
+## Product & Category Schema Decisions
+
+### Product
+
+The Product model will contain:
+
+* `name` — required string
+* `description` — required string
+* `price` — required non-negative integer
+* `category` — reference to the Category model using ObjectId
+* `variants` — array of embedded Variant subdocuments
+
+### Variant
+
+Each Product variant will contain:
+
+* `sku` — required string
+* `color` — required string
+* `size` — optional string
+* `quantity` — required non-negative integer
+
+### Why variants are embedded
+
+Variants are directly associated with their Product and contain inventory-specific information such as SKU and quantity.
+
+Therefore, variants are represented as embedded subdocuments:
+
+```js
+variants: [variantSchema]
+```
+
+### Why Category is a separate model
+
+Category is an independent entity that can be shared by many Products.
+
+Products therefore reference Category using:
+
+```js
+category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+}
+```
+
+### Category
+
+The Category model will contain:
+
+* `name` — required
+* `description` — optional
+* `slug` — required and unique
+
+### Slug generation
+
+The client/seller will not be responsible for generating the slug.
+
+The backend will generate the slug from the category name during category creation.
+
+Example:
+
+```text
+Men's Clothing → mens-clothing
+```
+
+Category creation/business logic belongs in the Service layer.
+
+### Price design
+
+Product price will be stored as an integer representing the base product price.
+
+Taxes, delivery fees, discounts and other transaction-specific amounts will be calculated later at the cart/order level rather than stored in the Product model.
+
+### SKU design
+
+SKU belongs to the Variant rather than the Product because each variant represents a distinct inventory item.
+
+SKU uniqueness will be handled as part of the product/inventory implementation rather than blindly treating `unique: true` as ordinary validation.
+
+### Current relationship design
+
+```text
+Category
+   ↑
+   │ ObjectId reference
+   │
+Product
+   │
+   └── variants[]
+          ├── sku
+          ├── color
+          ├── size
+          └── quantity
+```
