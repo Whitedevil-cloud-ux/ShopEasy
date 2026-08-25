@@ -11,7 +11,10 @@ const productValidator = [
         .trim()
         .notEmpty()
         .withMessage("Description is mandatory")
-        .isLength({ min: 10, max: 1000 }),
+        .isLength({ min: 10 })
+        .withMessage("Length should be more than 10 characters")
+        .isLength({ max: 1000 })
+        .withMessage("Length cannot exceed 1000 characters"),
 
     body("price")
         .notEmpty()
