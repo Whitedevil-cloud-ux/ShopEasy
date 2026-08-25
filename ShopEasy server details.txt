@@ -18,11 +18,32 @@ PS C:\Users\ASUS\OneDrive\Documents\ShopEasy> git push -u origin main (It is use
 PS C:\Users\ASUS\OneDrive\Documents\ShopEasy> git fetch origin (This command is used to fetch the branch name)
 
 user for testing in mongodb: 
-// api: http://localhost:5000/api/v1/auth/login
+// api: http://localhost:5000/api/v1/auth/login method: post
 "email": "jwt.test@example.com",
 "password": "Test@12345"
 
-// api: http://localhost:5000/api/v1/users/change-password (to change password)
+// api: http://localhost:5000/api/v1/users/change-password  method: put(to change password)
 "currentPassword": "Test@12345",
 "newPassword": "asldkfasd",
 "confirmPassword: "asldkfasd"
+
+// product category details: 
+Connected to MongoDB
+{ id: '6a8d4720e8b0150501dc43d0', name: 'Clothing', slug: 'clothing' }
+
+// admin login: 
+api: http://localhost:5000/api/v1/auth/login
+method: post
+{
+    "name": "admin@shopeasy.com",
+    "password": "Admin@12345"
+}
+
+// Product creation:
+api: http://localhost:5000/api/v1/products/ method: post
+body: {
+    "name": "Classic T-Shirt",
+    "description": "A comfortable cotton t-shirt for everyday wear",
+    "price": 999,
+    "category": "6a8d4720e8b0150501dc43d0"
+}
