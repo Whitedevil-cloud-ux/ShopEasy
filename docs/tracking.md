@@ -485,3 +485,24 @@ Before implementation, understand the responsibility of:
 * Service
 * Product model
 * Category reference
+
+## 2026-08-25 — Product Creation API
+
+### What we worked on
+- Built the Product creation API.
+- Added Product service layer, controller, and routes.
+- Connected Product routes to the main Express application.
+- Added admin-only authorization for product creation.
+- Connected product request validation with the existing validation middleware.
+- Added Category existence verification in the Product service.
+- Tested the complete Product creation flow with Postman.
+
+### Testing completed
+- Valid admin request → 201 Created ✅
+- Invalid product fields → 400 Bad Request ✅
+- Normal user attempting product creation → 403 Forbidden ✅
+- Valid MongoDB ObjectId but nonexistent category → 404 Not Found ✅
+- Missing authentication token → 401 Unauthorized ✅
+
+### Result
+Product creation is working end-to-end through authentication, authorization, validation, controller, service, category verification, and MongoDB persistence.

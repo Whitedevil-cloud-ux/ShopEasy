@@ -258,3 +258,13 @@ Product
           ├── size
           └── quantity
 ```
+## 2026-08-25 — Product Creation API Decisions
+
+### Decision 1 — Product creation is admin-only
+
+Product creation currently requires:
+
+```text
+JWT authentication
+        ↓
+Admin role authorization

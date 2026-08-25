@@ -469,3 +469,48 @@ price: 999
 ```
 
 This confirmed that the custom integer validation is working correctly.
+
+## 2026-08-25 — Product Creation API
+
+### What I learned
+
+#### Controller vs Service
+- The controller handles the HTTP request and response.
+- The service contains the business logic.
+- The controller calls the service instead of directly performing business logic.
+
+#### Validation vs Business Logic
+- Request validation checks whether the input has the correct structure and format.
+- The service checks business/data conditions.
+- Example:
+  - `isMongoId()` checks whether the category value has a valid MongoDB ObjectId format.
+  - `Category.findById()` checks whether that category actually exists.
+
+#### Middleware order
+The Product creation request follows:
+
+POST /api/v1/products
+→ authMiddleware
+→ verifyRole(["admin"])
+→ productValidator
+→ validation middleware
+→ controller
+→ service
+→ MongoDB
+
+- Authentication must run before role authorization because the role middleware uses `req.user`.
+- Validation happens before the controller so invalid requests don't reach the business logic.
+
+#### Service function design
+- Used one object as the argument to `createProduct()` instead of multiple positional arguments.
+- This makes the service easier to extend when more product fields are added later.
+
+#### HTTP status codes
+- `201` → resource successfully created
+- `400` → invalid request data
+- `401` → authentication missing/invalid
+- `403` → authenticated but not authorized
+- `404` → referenced category does not exist
+
+### Understanding
+I am increasingly able to build new modules by studying the existing ShopEasy patterns and adapting them. Sometimes I need time to understand the code, but I understand the purpose and flow after working through it.
