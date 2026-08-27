@@ -28,4 +28,25 @@ const registerProduct = async(req, res, next) => {
     }
 }
 
-module.exports = { registerProduct };
+const getAllProducts = async(req, res, next) => {
+    try {
+        const products = await productService.getAllProducts();
+        logger.info("Products retrieved successfully", {
+            requestId: req.requestId,
+            productCount: products.length,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Products retrieved successfully",
+            statusCode: 200,
+            data: {
+                products,
+            },
+        });
+    }catch (error) {
+        next(error);
+    }
+}
+
+module.exports = { registerProduct, getAllProducts };

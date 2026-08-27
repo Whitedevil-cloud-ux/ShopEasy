@@ -9,5 +9,6 @@ const verifyRole = require("../middleware/role.middleware");
 const router = express.Router();
 
 router.post("/", authMiddleware, verifyRole(["admin"]), productValidator, validate, productController.registerProduct);
+router.get("/", authMiddleware, productController.getAllProducts);
 
 module.exports = router;

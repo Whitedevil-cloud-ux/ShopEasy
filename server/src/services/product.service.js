@@ -32,4 +32,10 @@ const createProduct = async({
     };
 };
 
-module.exports = { createProduct };
+// Find all products and populate the category field
+const getAllProducts = async() => {
+    const products = await Product.find().populate("category");
+    return products;
+};
+
+module.exports = { createProduct, getAllProducts };
