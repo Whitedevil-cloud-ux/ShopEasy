@@ -12,5 +12,6 @@ router.post("/", authMiddleware, verifyRole(["admin"]), productValidator, valida
 router.get("/", authMiddleware, productController.getAllProducts);
 router.get("/:id", authMiddleware, productController.getProductById);
 router.patch("/:id", authMiddleware, verifyRole(["admin"]), updateProductValidator, validate, productController.updateProduct);
+router.delete("/:id", authMiddleware, verifyRole(["admin"]), productController.deleteProduct);
 
 module.exports = router;

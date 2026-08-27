@@ -113,4 +113,28 @@ const updateProduct = async({ productId, name, description, price, category }) =
 
     return newDetails;
 }
-module.exports = { createProduct, getAllProducts, getProductById, updateProduct };
+
+const deleteProduct = async(productId) => {
+    if(!mongoose.Types.ObjectId.isValid(productId)){
+        const error = new Error("Invalid format of Id");
+        error.statusCode = 400;
+        error.code = "INVALID_FORMAT_OF_MONGOID";
+
+        throw error;
+    }
+
+    const product = await Product.findById(productId);
+    if(!product){
+        const error = new Error("Product not found");
+        error.statusCode = 404;
+        error.code = "PRODUCT_NOT_FOUND";
+
+        throw error;
+    }
+
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+
+    return deletedProduct;
+}
+
+module.exports = { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct };

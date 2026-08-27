@@ -56,3 +56,18 @@ product id: 6a8d47b2d4212ec0a77e81c0
 // Get individual product
 api: http://localhost:5000/api/v1/products/6a8d47b2d4212ec0a77e81c0
 method: get
+
+// update product
+api: http://localhost:5000/api/v1/products/6a8d47b2d4212ec0a77e81c0
+method: patch
+body: {
+	"name": "...",
+	"description": "...",
+	"price": ...,
+	"category": "6a8d4720e8b0150501dc43d0"
+}
+
+// delete product
+api: http://localhost:5000/api/v1/products/6a8feff5bd1f8cd6c2f6fc66
+method: delete
+Note: this product is already deleted because we test the api on this product

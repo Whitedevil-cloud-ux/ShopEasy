@@ -90,4 +90,22 @@ const updateProduct = async(req, res, next) => {
         next(error);
     }
 }
-module.exports = { registerProduct, getAllProducts, getProductById, updateProduct };
+
+const deleteProduct = async(req, res, next) => {
+    try{
+        const productId = req.params.id;
+        const deletedProduct = await productService.deleteProduct(productId);
+        return res.status(200).json({
+            success: true,
+            message: "Product deleted successfully",
+            statusCode: 200,
+            data: {
+                deletedProduct,
+            },
+        });
+    } catch(error){
+        next(error);
+    }
+}
+
+module.exports = { registerProduct, getAllProducts, getProductById, updateProduct, deleteProduct };
