@@ -514,3 +514,60 @@ POST /api/v1/products
 
 ### Understanding
 I am increasingly able to build new modules by studying the existing ShopEasy patterns and adapting them. Sometimes I need time to understand the code, but I understand the purpose and flow after working through it.
+
+## 2026-08-27 
+
+### What I learned
+- I've learned about mongoose.Types.ObjectId.isValid(), it's used to check whether the id passed is of valid format or not
+- req.params.id it's use to fetch the id from the url(uniform resource locator)
+
+```md
+## Product Management — Key Learnings
+
+### Service vs Controller Responsibilities
+
+The controller handles HTTP-related responsibilities:
+
+- reading request parameters/body
+- calling the service
+- returning the HTTP response
+- passing errors to `next(error)`
+
+The service handles business logic and database operations.
+
+Example flow:
+
+Request
+→ Route
+→ Middleware
+→ Controller
+→ Service
+→ Model/Database
+→ Response
+
+### Validation vs Business Logic
+
+Validation/middleware checks whether the input itself is valid.
+
+Examples:
+- required fields
+- string length
+- integer price
+- valid MongoDB ID format
+
+The service checks business/data conditions.
+
+Example:
+
+A category ID can have a valid MongoDB format but still not exist in the database.
+
+Therefore:
+
+Valid format ≠ existing database record.
+
+### MongoDB ObjectId Validation
+
+Learned to distinguish:
+
+```js
+mongoose.Types.ObjectId.isValid(productId)

@@ -506,3 +506,18 @@ Before implementation, understand the responsibility of:
 
 ### Result
 Product creation is working end-to-end through authentication, authorization, validation, controller, service, category verification, and MongoDB persistence.
+
+## 2026-08-27 Product Management — COMPLETED + TESTED
+
+### Product Retrieval
+
+Implemented:
+
+`GET /api/v1/products`
+
+Returns all products with their associated category populated.
+
+Service uses:
+
+```js
+Product.find().populate("category")
