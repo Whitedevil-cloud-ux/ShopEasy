@@ -30,4 +30,30 @@ const productValidator = [
         .withMessage("Category must be a valid ID"),
 ];
 
-module.exports = { productValidator };
+const updateProductValidator = [
+    body("name")
+        .optional()
+        .trim()
+        .isLength({ min: 2, max: 100 })
+        .withMessage("Name must contain between 2 and 100 characters"),
+
+    body("description")
+        .optional()
+        .trim()
+        .isLength({ min: 10 })
+        .withMessage("Description should be at least 10 characters")
+        .isLength({ max: 1000 })
+        .withMessage("Description should not be more than 1000 characters"),
+
+    body("price")
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage("Price must be a non-negative integer"),
+
+    body("category")
+        .optional()
+        .isMongoId()
+        .withMessage("Category must be valid Id"),
+]
+
+module.exports = { productValidator, updateProductValidator };

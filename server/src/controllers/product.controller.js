@@ -66,4 +66,28 @@ const getProductById = async(req, res, next) => {
     }
 }
 
-module.exports = { registerProduct, getAllProducts, getProductById };
+const updateProduct = async(req, res, next) => {
+    try{
+        const productId = req.params.id;
+        const productData = {
+            productId,
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            category: req.body.category,
+        };
+        const product = await productService.updateProduct(productData);
+
+        return res.status(200).json({
+            success: true,
+            message: "Updated details successfully",
+            statusCode: 200,
+            data: {
+                product,
+            },
+        });
+    }catch (error){
+        next(error);
+    }
+}
+module.exports = { registerProduct, getAllProducts, getProductById, updateProduct };

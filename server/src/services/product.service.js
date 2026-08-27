@@ -59,4 +59,58 @@ const getProductById = async(productId) => {
     return product;
 };
 
-module.exports = { createProduct, getAllProducts, getProductById };
+const updateProduct = async({ productId, name, description, price, category }) => {
+    if(!mongoose.Types.ObjectId.isValid(productId)){
+        const error = new Error("Invalid format of Id");
+        error.statusCode = 400;
+        error.code = "INVALID_FORMAT";
+
+        throw error;
+    }
+    const product = await Product.findById(productId);
+    if(!product){
+        const error = new Error("Product not found");
+        error.statusCode = 404;
+        error.code = "PRODUCT_NOT_FOUND";
+
+        throw error;
+    }
+
+    const updateData = {};
+
+    if(name !== undefined){
+            updateData.name = name;
+    }
+
+    if(description !== undefined){
+        updateData.description = description;
+    }
+
+    if(price !== undefined){
+        updateData.price = price;
+    }
+
+    if(category !== undefined){
+        const categoryDoc = await Category.findById(category);
+        if(!categoryDoc) {
+            const error = new Error("Category not found");
+            error.statusCode = 404;
+            error.code = "CATEGORY_NOT_FOUND";
+
+            throw error;
+        }
+    }
+
+    if(Object.keys(updateData).length === 0){
+        const error = new Error("Update at least one field");
+        error.statusCode = 400;
+        error.code = "NO_FIELD_UPDATED";
+
+        throw error;
+    }
+
+    const newDetails = await Product.findByIdAndUpdate(productId, updateData, { new: true });
+
+    return newDetails;
+}
+module.exports = { createProduct, getAllProducts, getProductById, updateProduct };
