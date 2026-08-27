@@ -10,5 +10,6 @@ const router = express.Router();
 
 router.post("/", authMiddleware, verifyRole(["admin"]), productValidator, validate, productController.registerProduct);
 router.get("/", authMiddleware, productController.getAllProducts);
+router.get("/:id", authMiddleware, productController.getProductById);
 
 module.exports = router;

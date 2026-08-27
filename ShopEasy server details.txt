@@ -47,3 +47,12 @@ body: {
     "price": 999,
     "category": "6a8d4720e8b0150501dc43d0"
 }
+
+// Get all products
+api: http://localhost:5000/api/v1/products
+method: get
+product id: 6a8d47b2d4212ec0a77e81c0
+
+// Get individual product
+api: http://localhost:5000/api/v1/products/6a8d47b2d4212ec0a77e81c0
+method: get

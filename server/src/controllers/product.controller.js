@@ -49,4 +49,21 @@ const getAllProducts = async(req, res, next) => {
     }
 }
 
-module.exports = { registerProduct, getAllProducts };
+const getProductById = async(req, res, next) => {
+    try {
+        const productId = req.params.id;
+        const product = await productService.getProductById(productId);
+        return res.status(200).json({
+            success: true,
+            message: "Product retrieved successfully",
+            statusCode: 200,
+            data: {
+                product,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+module.exports = { registerProduct, getAllProducts, getProductById };

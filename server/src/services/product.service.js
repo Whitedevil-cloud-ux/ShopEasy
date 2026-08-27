@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Category = require("../models/Category");
 const Product = require("../models/Product");
 
@@ -38,4 +39,24 @@ const getAllProducts = async() => {
     return products;
 };
 
-module.exports = { createProduct, getAllProducts };
+const getProductById = async(productId) => {
+    if(!mongoose.Types.ObjectId.isValid(productId)){
+        const error = new Error("Invalid format Id");
+        error.statusCode = 400;
+        error.code = "INVALID_MONGO_ID_FORMAT";
+
+        throw error;
+    }
+    const product = await Product.findById(productId).populate("category");
+    if(!product) {
+        const error = new Error("Product not found");
+        error.statusCode = 404;
+        error.code = "PRODUCT_NOT_FOUND";
+
+        throw error;
+    }
+
+    return product;
+};
+
+module.exports = { createProduct, getAllProducts, getProductById };
