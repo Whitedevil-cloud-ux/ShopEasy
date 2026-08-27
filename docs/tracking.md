@@ -507,17 +507,59 @@ Before implementation, understand the responsibility of:
 ### Result
 Product creation is working end-to-end through authentication, authorization, validation, controller, service, category verification, and MongoDB persistence.
 
-## 2026-08-27 Product Management — COMPLETED + TESTED
+## 2026-08-27 ## Product Management — CRUD — COMPLETED + TESTED
 
-### Product Retrieval
-
-Implemented:
-
+### Get All Products
 `GET /api/v1/products`
 
-Returns all products with their associated category populated.
+- JWT authentication required
+- Returns all products
+- Category is populated
+- Empty database returns an empty array
+- Tested successfully
 
-Service uses:
+### Get Product by ID
+`GET /api/v1/products/:id`
 
-```js
-Product.find().populate("category")
+- JWT authentication required
+- MongoDB ObjectId format validated
+- Invalid ID format returns 400
+- Non-existent product returns 404
+- Category is populated
+- Tested successfully
+
+### Update Product
+`PATCH /api/v1/products/:id`
+
+- Admin-only access
+- JWT authentication
+- Partial updates supported
+- Only supplied fields are updated
+- Update fields are validated
+- Category existence is checked when supplied
+- Invalid product ID returns 400
+- Non-existent product returns 404
+- Empty update request returns 400
+- Returns the updated product
+- Tested successfully
+
+### Delete Product
+`DELETE /api/v1/products/:id`
+
+- Admin-only access
+- JWT authentication
+- MongoDB ObjectId format validated
+- Non-existent product returns 404
+- Product successfully deleted
+- Returns the deleted product
+- Tested successfully
+
+### Authorization Testing
+
+Product management endpoints were tested for:
+
+- No authentication token → 401
+- Authenticated non-admin user → 403
+- Invalid product ID → 400
+- Non-existent product → 404
+- Successful operations → 200/201

@@ -571,3 +571,31 @@ Learned to distinguish:
 
 ```js
 mongoose.Types.ObjectId.isValid(productId)
+
+## Product Management — Concepts Learned
+
+### Controller-Service-Model Flow
+
+Implemented the complete request flow:
+
+Request
+→ Route
+→ Middleware
+→ Controller
+→ Service
+→ Model
+→ MongoDB
+→ Response
+
+Controllers handle HTTP concerns while services contain business logic and database operations.
+
+### Partial Updates with PATCH
+
+Learned that PATCH is appropriate when only selected fields need to be changed.
+
+For example:
+
+```json
+{
+  "price": 1500
+}

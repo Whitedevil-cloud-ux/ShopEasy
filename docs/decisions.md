@@ -262,9 +262,96 @@ Product
 
 ### Decision 1 — Product creation is admin-only
 
-Product creation currently requires:
+```Product creation currently requires:
 
-```text
+- text
 JWT authentication
         ↓
 Admin role authorization
+```
+
+## 2026-08-27
+
+---
+
+This one is important because we've made several actual architectural decisions today.
+
+Add:
+
+```md
+## Product Management Decisions
+
+### Product Authorization
+
+Product creation, update, and deletion are restricted to users with the `admin` role.
+
+Current policy:
+
+- User → cannot manage product data
+- Admin → can create, update, and delete products
+
+The authorization middleware is kept separate from authentication.
+
+### Product Update Uses PATCH
+
+Product updates use:
+
+`PATCH /api/v1/products/:id`
+
+rather than requiring the complete product object.
+
+Reason:
+
+An administrator may want to change only one field, such as price, without resending the complete product.
+
+### Partial Update Strategy
+
+Only fields explicitly supplied by the administrator are included in the update operation.
+
+`undefined` fields are ignored.
+
+This prevents unspecified fields from being overwritten.
+
+### Empty PATCH Requests
+
+A PATCH request containing no updateable fields returns:
+
+- HTTP 400
+- `NO_FIELD_UPDATED`
+
+Reason:
+
+An update request should contain at least one actual change.
+
+### Product ID Validation
+
+Product IDs are explicitly checked with Mongoose ObjectId validation before database operations.
+
+Invalid format:
+
+- HTTP 400
+- `INVALID_FORMAT`
+
+A correctly formatted ID that does not correspond to an existing product returns:
+
+- HTTP 404
+- `PRODUCT_NOT_FOUND`
+
+### Category Integrity
+
+When a category is supplied during product creation or update:
+
+1. The category ID format is validated.
+2. The category document is checked for existence.
+
+This prevents products from referencing a category that does not exist.
+
+### Product Deletion
+
+Product deletion returns the deleted product document after successful deletion.
+
+A missing product returns 404 rather than silently succeeding.
+
+### Product API Testing
+
+Product CRUD endpoints were tested through Postman for both successful and failure scenarios before considering the feature complete.
