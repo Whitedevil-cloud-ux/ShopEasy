@@ -563,3 +563,10 @@ Product management endpoints were tested for:
 - Invalid product ID → 400
 - Non-existent product → 404
 - Successful operations → 200/201
+
+## 2026-09-10
+
+- Product model now supports simple and variable types.
+- Simple products store price + stock at Product level.
+- Variable products do not store price + stock at Product level.
+- Product creation validation and Postman tests completed.

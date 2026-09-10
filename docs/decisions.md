@@ -355,3 +355,7 @@ A missing product returns 404 rather than silently succeeding.
 ### Product API Testing
 
 Product CRUD endpoints were tested through Postman for both successful and failure scenarios before considering the feature complete.
+
+## 2026-09-10
+
+ShopEasy supports two product types: simple and variable. Simple products own price and stock at the Product level, while variable products delegate price and stock to their separate Variant documents. Product-level price/stock are rejected for variable products rather than silently ignored.

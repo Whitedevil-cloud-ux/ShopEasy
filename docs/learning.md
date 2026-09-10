@@ -599,3 +599,11 @@ For example:
 {
   "price": 1500
 }
+```
+
+## 2026-09-10
+
+- Conditional validation based on another request field.
+- Difference between request validation and Mongoose validation.
+- Why express-validator custom validators need to explicitly succeed with return true.
+- Controller/service data flow when adding new fields.
