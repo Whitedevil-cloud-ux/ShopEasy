@@ -20,7 +20,9 @@ const productSchema = new mongoose.Schema(
 
         price: {
             type: Number,
-            required: [true, "Product price is required"],
+            required: function () {
+                return this.type === "simple";
+            },
             min: [0, "Product price cannot be negative"],
             validate: {
                 validator: Number.isInteger,
@@ -32,6 +34,24 @@ const productSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
             required: true,
+        },
+
+        type: {
+            type: String,
+            enum: ["simple", "variable"],
+            required: [true, "Product type is required"],
+        },
+
+        stock: {
+            type: Number,
+            required: function () {
+                return this.type === "simple";
+            },
+            min: [0, "Product stock cannot be negative"],
+            validate: {
+                validator: Number.isInteger,
+                message: "Product stock must be an integer",
+            },
         },
     }
 )

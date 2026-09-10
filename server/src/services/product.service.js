@@ -6,7 +6,9 @@ const createProduct = async({
     name, 
     description, 
     price, 
-    category 
+    category,
+    type,
+    stock
 }) => {
     const existingCategory = await Category.findById(category);
     if(!existingCategory) {
@@ -22,6 +24,8 @@ const createProduct = async({
         description,
         price,
         category,
+        type,
+        stock
     });
 
     return {
@@ -30,6 +34,8 @@ const createProduct = async({
         description: product.description,
         price: product.price,
         category: product.category,
+        type: product.type,
+        stock: product.stock,
     };
 };
 

@@ -16,11 +16,53 @@ const productValidator = [
         .isLength({ max: 1000 })
         .withMessage("Length cannot exceed 1000 characters"),
 
-    body("price")
+    body("type")
         .notEmpty()
-        .withMessage("Price is required")
-        .isInt({ min: 0 })
-        .withMessage("Price must be a non-negative integer"),
+        .withMessage("Product type is required")
+        .isIn(["simple", "variable"])
+        .withMessage("Type must be either 'simple' or 'variable' "),
+
+    body("price")
+        .custom((value, { req }) => {
+            if (req.body.type === "simple") {
+                if(value === undefined || value === null) {
+                    throw new Error("Price is required");
+                }
+                if (!Number.isInteger(value)) {
+                        throw new Error("Price must be an integer");
+                }
+                if(value < 1) {
+                    throw new Error("Price must be greater than or equal to 1");
+                }
+            }
+            if (req.body.type === "variable") {
+                if (value !== undefined) {
+                    throw new Error("Price should not be provided for variable products");
+                }
+            }
+            return true;
+        }),
+
+    body("stock")
+        .custom((value, { req }) => {
+            if(req.body.type === "simple") {
+                if(value === undefined || value === null) {
+                    throw new Error("Stock is required");
+                }
+                if(!Number.isInteger(value)){
+                    throw new Error("Stock must be an integer");
+                }
+                if(value < 0) {
+                    throw new Error("Stock must be non-negative");
+                }
+            }
+            if(req.body.type === "variable") {
+                if(value !== undefined) {
+                    throw new Error("Stock should not be provided for variable products");
+                }
+            }
+            return true;
+        }),
 
     body("category")
         .trim()

@@ -8,6 +8,8 @@ Ip: 103.77.42.254
 connection string: mongodb+srv://abhishekchoudhary38808_db_user:yy0vZKbhsvqvT8el@shopeasy-cluster.dxqypke.mongodb.net/?appName=ShopEasy-cluster
 
 
+Run command - npm run dev
+
 Powershell commands to check whether the code is pushed to github: 
 PS C:\WINDOWS\System32> cd C:\Users\ASUS\OneDrive\Documents\ShopEasy (access the folder)
 PS C:\Users\ASUS\OneDrive\Documents\ShopEasy> git status (Check the status)
@@ -35,17 +37,28 @@ Connected to MongoDB
 api: http://localhost:5000/api/v1/auth/login
 method: post
 {
-    "name": "admin@shopeasy.com",
+    "email": "admin@shopeasy.com",
     "password": "Admin@12345"
 }
 
 // Product creation:
 api: http://localhost:5000/api/v1/products/ method: post
+Type: Variable
 body: {
     "name": "Classic T-Shirt",
     "description": "A comfortable cotton t-shirt for everyday wear",
-    "price": 999,
+    "type": "variable",
     "category": "6a8d4720e8b0150501dc43d0"
+}
+
+Type: Simple
+body: {
+	"name": "Nike Running Shoes",
+	"description": "Comfortable running shoes for everyday training",
+	"type": "simple",
+	"price": 2500,
+	"stock": 20,
+	"category: "6a8d4720e8b0150501dc43d0"
 }
 
 // Get all products
