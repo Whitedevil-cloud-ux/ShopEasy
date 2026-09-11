@@ -84,3 +84,42 @@ body: {
 api: http://localhost:5000/api/v1/products/6a8feff5bd1f8cd6c2f6fc66
 method: delete
 Note: this product is already deleted because we test the api on this product
+
+// create variant (variable) to do this you have to first login as admin
+api: http://localhost:5000/api/v1/variants/
+method: post
+body: 
+{
+  "productId": "6aa29fda89486a6d9086f7ca",
+  "sku": "TS-BLU-M-001",
+  "attributes": [
+    {
+      "name": "size",
+      "value": "M"
+    },
+    {
+      "name": "color",
+      "value": "Blue"
+    }
+  ],
+  "price": 799,
+  "stock": 20
+}
+
+// create variant (simple)
+method: post
+body: 
+{
+  "productId": "6aa29f4989486a6d9086f7c9",
+  "sku": "SHOE-BLK-001",
+  "attributes": [
+    {
+      "name": "size",
+      "value": 9
+    }
+  ],
+  "price": 2500,
+  "stock": 10
+}
+
+response: {success: false, statusCode: 400, message: Product type is simple} (This is working)

@@ -11,6 +11,7 @@ const requestLogger = require("./middleware/requestLogger.middleware");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const productRoutes = require("./routes/product.routes");
+const variantRoutes = require("./routes/variant.routes");
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/api/v1", apiRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/variants", variantRoutes);
 
 // 404 middleware
 app.use(notFound);
