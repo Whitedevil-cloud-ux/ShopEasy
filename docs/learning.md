@@ -607,3 +607,169 @@ For example:
 - Difference between request validation and Mongoose validation.
 - Why express-validator custom validators need to explicitly succeed with return true.
 - Controller/service data flow when adding new fields.
+
+## 2026-09-11
+
+## Variant Management — Concepts Learned
+
+### Separate Product and Variant Models
+
+A Variant is stored in a separate MongoDB collection rather than being embedded inside the Product document.
+
+The Variant contains a reference to the Product:
+
+Product
+→ Variant
+
+This allows each purchasable configuration to exist as its own document.
+
+---
+
+### Product Type and Business Rules
+
+ShopEasy supports:
+
+- simple Product
+- variable Product
+
+Simple Products use Product-level price and stock.
+
+Variable Products use Variant-level price and stock.
+
+A Variant can only belong to a variable Product.
+
+---
+
+### Mongoose Mixed Type
+
+Variant attributes use flexible values.
+
+An attribute value can be:
+
+- string
+- number
+- boolean
+
+Mongoose `Schema.Types.Mixed` is useful when a field intentionally supports multiple data types.
+
+Additional validation is required because Mixed does not provide strict type enforcement by itself.
+
+---
+
+### Array Validation
+
+The Variant `attributes` field is an array of attribute objects.
+
+The model validates that:
+
+- at least one attribute exists
+- attribute names are unique within the Variant
+
+This demonstrates the difference between validating a field's basic type and validating a business rule involving multiple array elements.
+
+---
+
+### Normalization
+
+Attribute names are normalized using:
+
+trim → lowercase
+
+String attribute values are normalized using:
+
+trim → lowercase
+
+Normalization allows logically equivalent values to be compared consistently.
+
+Example:
+
+" Blue "
+"blue"
+"BLUE"
+
+are treated as the same value for duplicate-combination checking.
+
+---
+
+### Deterministic Variation Key
+
+A variation key is generated to compare Variant combinations.
+
+Process:
+
+1. Normalize attributes.
+2. Sort attributes by attribute name.
+3. Convert the normalized array using `JSON.stringify()`.
+
+Sorting is important because attribute order should not affect the identity of a Variant combination.
+
+Example:
+
+Color = Blue, Size = M
+
+and:
+
+Size = M, Color = Blue
+
+represent the same combination.
+
+---
+
+### Array.prototype.some()
+
+`.some()` is useful when checking whether at least one existing Variant satisfies a condition.
+
+Concept:
+
+existingVariants
+→ check each Variant
+→ if one variation key matches
+→ duplicateVariant = true
+
+This is different from `.map()`, which transforms every element.
+
+---
+
+### Business Conflict vs Database Conflict
+
+ShopEasy has two different duplicate cases:
+
+Duplicate SKU:
+- enforced by MongoDB unique constraint
+- returns 409 Conflict
+
+Duplicate attribute combination:
+- detected by application/service business logic
+- returns 409 Conflict
+
+Both represent conflicts, but they are detected at different layers.
+
+---
+
+### Error Semantics
+
+Variant-related errors follow the project's established HTTP conventions:
+
+400:
+Invalid request or incompatible Product type
+
+404:
+Product does not exist
+
+409:
+Resource conflicts with an existing resource
+
+---
+
+### Important Architectural Lesson
+
+A variable Product requiring at least one Variant cannot be solved simply by making a Variant field required on the Product model because Product and Variant are separate documents.
+
+This creates a lifecycle/transaction problem:
+
+Product creation
+→ Variant creation
+
+If both must succeed together, atomicity becomes important.
+
+This will be addressed in the next implementation stage.

@@ -359,3 +359,147 @@ Product CRUD endpoints were tested through Postman for both successful and failu
 ## 2026-09-10
 
 ShopEasy supports two product types: simple and variable. Simple products own price and stock at the Product level, while variable products delegate price and stock to their separate Variant documents. Product-level price/stock are rejected for variable products rather than silently ignored.
+
+## 2026-09-11
+
+## Variant Architecture Decisions
+
+### Variant as a Separate Collection
+
+Decision:
+Store Variants in a separate MongoDB collection.
+
+Reason:
+A Variant represents an individual purchasable configuration and has its own SKU, price and stock.
+
+Variant references Product through:
+
+product: ObjectId
+
+---
+
+### Variant Belongs Only to Variable Products
+
+Decision:
+A Variant may only be created for a Product whose type is `variable`.
+
+Reason:
+Simple Products have their own Product-level price and stock and do not require purchasable configurations.
+
+Attempting to create a Variant for a simple Product returns:
+
+400 Bad Request
+
+---
+
+### SKU Is Globally Unique
+
+Decision:
+SKU must be unique across ShopEasy.
+
+Reason:
+SKU is an inventory/business identifier rather than merely a Product-specific identifier.
+
+MongoDB enforces the uniqueness constraint.
+
+Duplicate SKU:
+
+409 Conflict
+
+---
+
+### Variant Combination Must Be Unique Per Product
+
+Decision:
+Two Variants belonging to the same Product cannot have the same attribute combination.
+
+Reason:
+Two Variants representing the same purchasable configuration would be redundant even if their SKUs are different.
+
+Example:
+
+Variant A:
+Color = Blue
+Size = M
+
+Variant B:
+Size = M
+Color = Blue
+
+These represent the same combination.
+
+---
+
+### Attribute Order Is Not Significant
+
+Decision:
+Attribute order does not determine Variant identity.
+
+Reason:
+`Color + Size` and `Size + Color` describe the same configuration.
+
+Implementation:
+- normalize attributes
+- sort by attribute name
+- generate deterministic variation key
+
+---
+
+### Case and Whitespace Are Not Significant for Comparison
+
+Decision:
+Attribute names and string values are normalized using trimming and lowercase conversion before comparison.
+
+Reason:
+Values such as:
+
+" Blue "
+"BLUE"
+"blue"
+
+should not create separate Variant combinations.
+
+---
+
+### Variation Key Is Generated Rather Than Stored
+
+Decision:
+Generate the variation key in the service when checking for duplicate combinations rather than storing it as a required Variant field.
+
+Reason:
+The key is currently an implementation detail used for comparison rather than part of the external Variant data model.
+
+The key is generated using:
+
+JSON.stringify(normalizedAndSortedAttributes)
+
+---
+
+### Duplicate Variation Uses 409 Conflict
+
+Decision:
+A duplicate attribute combination returns:
+
+409 Conflict
+
+with:
+
+DUPLICATE_VARIATION
+
+Reason:
+The request is valid in structure but conflicts with an existing Variant combination.
+
+---
+
+### Variable Product Must Eventually Have at Least One Variant
+
+Decision:
+A variable Product must not ultimately exist without at least one Variant.
+
+Current status:
+Not yet implemented.
+
+Reason:
+Product and Variant are separate MongoDB documents. Enforcing this invariant requires careful handling of the Product + Variant creation lifecycle and potentially a transaction.
+
+This decision will be implemented in the next stage rather than using an incomplete workaround.

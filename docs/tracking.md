@@ -570,3 +570,47 @@ Product management endpoints were tested for:
 - Simple products store price + stock at Product level.
 - Variable products do not store price + stock at Product level.
 - Product creation validation and Postman tests completed.
+
+## 2026-09-11
+
+## Variant Management — IN PROGRESS
+
+### Completed
+
+- Variant Mongoose model created.
+- Variant creation endpoint implemented.
+- Admin-only authorization implemented.
+- Product existence check implemented.
+- Simple Products rejected from Variant creation.
+- Variant SKU uniqueness enforced.
+- Variant price validation implemented.
+- Variant stock validation implemented.
+- Variant attribute validation implemented.
+- Duplicate Variant combination detection implemented.
+- Attribute normalization implemented.
+- Attribute order independence implemented.
+- Postman testing completed.
+
+### Variant Endpoint
+
+POST /api/v1/variants/
+
+Authorization:
+- Admin only
+
+### Tests Completed
+
+- Valid Variant for variable Product → 201 Created
+- Variant for simple Product → 400 Bad Request
+- Nonexistent Product → 404 Not Found
+- Duplicate SKU → 409 Conflict
+- Duplicate Variant combination → 409 Conflict
+- Same combination with different attribute order/capitalization → 409 Conflict
+
+### Current Pending Work
+
+- Ensure a variable Product cannot ultimately exist without at least one Variant.
+- Implement this correctly using an appropriate Product + Variant creation strategy/transaction.
+
+Status:
+PARTIAL — Variant creation and validation are complete, but the variable-product lifecycle invariant is not yet complete.
