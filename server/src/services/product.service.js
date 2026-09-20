@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Category = require("../models/Category");
 const Product = require("../models/Product");
+const { createVariantDocument } = require("./variant.service");
 
 const createProduct = async({ 
     name, 
@@ -8,35 +9,68 @@ const createProduct = async({
     price, 
     category,
     type,
-    stock
+    stock,
+    variants
 }) => {
-    const existingCategory = await Category.findById(category);
-    if(!existingCategory) {
-        const error = new Error("Category id not found");
-        error.statusCode = 404;
-        error.code = "CATEGORY_NOT_FOUND";
+    const session = await mongoose.startSession();
+    try {
+        session.startTransaction();
+
+        const existingCategory = await Category.findById(category).session(session);
+        if(!existingCategory) {
+            const error = new Error("Category id not found");
+            error.statusCode = 404;
+            error.code = "CATEGORY_NOT_FOUND";
+            
+            throw error;
+        }
+
+        const [product] = await Product.create(
+            [{
+                name,
+                description,
+                price,
+                category,
+                type,
+                stock
+            }], {
+                session
+            }
+        );
+
+        if(type === "variable") {
+            for (const variant of variants) {
+                await createVariantDocument(
+                    {
+                        productId: product._id,
+                        sku: variant.sku,
+                        attributes: variant.attributes,
+                        price: variant.price,
+                        stock: variant.stock,
+                        session
+                    });
+            }
+        }
         
+        await session.commitTransaction();
+
+        return {
+            id: product._id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            category: product.category,
+            type: product.type,
+            stock: product.stock,
+        };
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
         throw error;
+    } finally {
+        await session.endSession();
     }
-
-    const product = await Product.create({
-        name,
-        description,
-        price,
-        category,
-        type,
-        stock
-    });
-
-    return {
-        id: product._id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        category: product.category,
-        type: product.type,
-        stock: product.stock,
-    };
 };
 
 // Find all products and populate the category field

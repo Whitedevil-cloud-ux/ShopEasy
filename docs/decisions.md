@@ -503,3 +503,64 @@ Reason:
 Product and Variant are separate MongoDB documents. Enforcing this invariant requires careful handling of the Product + Variant creation lifecycle and potentially a transaction.
 
 This decision will be implemented in the next stage rather than using an incomplete workaround.
+
+---
+
+## 2026-09-20 — Product + Variant Transaction Decisions
+
+### Variable Product Creation Must Be Atomic
+
+Decision:
+
+Variable Product creation and creation of its initial Variants must happen inside the same MongoDB transaction.
+
+Reason:
+
+A variable Product must have at least one Variant.
+
+Because Product and Variant are stored in separate MongoDB collections, creating the Product first and the Variants afterward could otherwise leave an incomplete Product if Variant creation fails.
+
+Therefore:
+
+Product creation
++
+Initial Variant creation(s)
+↓
+Same transaction
+
+Either all operations succeed or all operations are rolled back.
+
+---
+
+### Product Service Owns the Transaction
+
+Decision:
+
+The Product service is responsible for starting, committing, aborting, and ending the transaction during Product creation.
+
+Reason:
+
+Creating the Product is the parent operation that determines whether Variant creation is required.
+
+The Product service therefore controls the complete lifecycle:
+
+```text
+Start Session
+    ↓
+Start Transaction
+    ↓
+Create Product
+    ↓
+Create initial Variants
+    ↓
+Commit
+
+```
+# If any operation fails: 
+Error
+ ↓
+Abort Transaction
+ ↓
+Rollback Product + Variants
+ ↓
+End Session

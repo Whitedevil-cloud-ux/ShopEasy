@@ -773,3 +773,79 @@ Product creation
 If both must succeed together, atomicity becomes important.
 
 This will be addressed in the next implementation stage.
+
+---
+
+## 2026-09-20 — Product + Variant Transactions
+
+### MongoDB Transactions
+
+Learned why MongoDB transactions are needed when creating related documents that must succeed or fail together.
+
+For a variable Product:
+
+Product creation
+→ Variant creation
+→ Commit transaction
+
+If any Variant creation fails:
+
+Product creation
+→ Variant creation fails
+→ Abort transaction
+→ Product is rolled back
+
+This prevents partially-created Products.
+
+---
+
+### Mongoose Sessions
+
+Learned that MongoDB transactions in Mongoose use a session.
+
+The session must be passed to database operations that should participate in the transaction.
+
+Example:
+
+```js
+const session = await mongoose.startSession();
+
+session.startTransaction();
+
+await Product.create(
+    [{ ... }],
+    { session }
+);
+
+await Variant.create(
+    [{ ... }],
+    { session }
+);
+
+await session.commitTransaction();
+
+```
+
+## Transaction Lifecycle
+
+Start Session
+      ↓
+Start Transaction
+      ↓
+Validate required database references
+      ↓
+Create Product
+      ↓
+Create Variants
+      ↓
+Commit Transaction
+
+# If an error occurs: 
+
+Error
+ ↓
+Abort Transaction
+ ↓
+Rollback all changes
+ ↓
+End Session

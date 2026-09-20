@@ -10,6 +10,7 @@ const registerProduct = async(req, res, next) => {
             category: req.body.category,
             type: req.body.type,
             stock: req.body.stock,
+            variants: req.body.variants,
         });
 
         logger.info("Product created successfully", {

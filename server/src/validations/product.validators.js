@@ -43,6 +43,11 @@ const productValidator = [
             return true;
         }),
 
+    body("variants.*.stock")
+    .if(body("type").equals("variable"))
+    .isInt({ min: 0 })
+    .withMessage("Variant stock must be a non-negative integer (>=0)."),
+
     body("stock")
         .custom((value, { req }) => {
             if(req.body.type === "simple") {
@@ -70,6 +75,98 @@ const productValidator = [
         .withMessage("Category is required")
         .isMongoId()
         .withMessage("Category must be a valid ID"),
+
+    body("variants")
+        .custom((value, { req }) => {
+            if(req.body.type === "variable") {
+                if(!Array.isArray(value)) {
+                    throw new Error("Variants must be an array");
+                }
+
+                if(value.length < 1) {
+                    throw new Error("Variants cannot be empty");
+                }
+            }
+
+            if(req.body.type == "simple") {
+                if(value !== undefined) {
+                    throw new Error("Variants should not be provided for simple products");
+                }
+            }
+           return true;
+        }),
+
+    body("variants.*.price")
+        .if(body("type").equals("variable"))
+        .isInt({ min: 1 })
+        .withMessage("Variant price must be a positive integer (>=1)."),
+
+    body("variants.*.sku")
+    .if(body("type").equals("variable"))
+    .trim()
+    .notEmpty()
+    .withMessage("Variant SKU is required")
+    .isString()
+    .withMessage("Variant SKU must be a string")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Variant SKU must contain between 2 and 50 characters"),
+
+    body("variants.*.attributes")
+    .if(body("type").equals("variable"))
+    .isArray({ min: 1 })
+    .withMessage("Variant attributes must contain at least 1 item."),
+
+    body("variants.*.attributes.*.name")
+    .if(body("type").equals("variable"))
+    .trim()
+    .notEmpty()
+    .withMessage("Attribute name is required")
+    .isString()
+    .withMessage("Attribute name must be a string")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Attribute name must contain between 2 and 50 characters"),
+
+    body("variants.*.attributes.*.value")
+    .if(body("type").equals("variable"))
+    .custom((value) => {
+        if (typeof value === "string") {
+            if (value.trim().length === 0) {
+                throw new Error("Attribute value cannot be empty");
+            }
+            return true;
+        }
+
+        if (typeof value === "number") {
+            if (!Number.isFinite(value)) {
+                throw new Error("Attribute value must be a finite number");
+            }
+            return true;
+        }
+
+        if (typeof value === "boolean") {
+            return true;
+        }
+
+        throw new Error(
+            "Attribute value must be a non-empty string, finite number, or boolean"
+        );
+    }),
+
+    body("variants.*.attributes")
+    .if(body("type").equals("variable"))
+    .custom((attributes) => {
+        const names = attributes.map(attribute =>
+            attribute.name.trim().toLowerCase()
+        );
+
+        const uniqueNames = new Set(names);
+
+        if (names.length !== uniqueNames.size) {
+            throw new Error("Attribute names must be unique within a variant");
+        }
+
+        return true;
+    }),
 ];
 
 const updateProductValidator = [

@@ -1,3 +1,6 @@
+const dns = require("dns");
+dns.setServers(["8.8.8.8"]);
+
 const mongoose = require("mongoose");
 const config = require("../config/config");
 const logger = require("../utils/logger");

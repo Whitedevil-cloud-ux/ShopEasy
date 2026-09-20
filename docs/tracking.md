@@ -607,10 +607,53 @@ Authorization:
 - Duplicate Variant combination → 409 Conflict
 - Same combination with different attribute order/capitalization → 409 Conflict
 
-### Current Pending Work
+## 2026-09-20 — Product + Variant Creation Transaction
 
-- Ensure a variable Product cannot ultimately exist without at least one Variant.
-- Implement this correctly using an appropriate Product + Variant creation strategy/transaction.
+### Completed
 
-Status:
-PARTIAL — Variant creation and validation are complete, but the variable-product lifecycle invariant is not yet complete.
+- [x] Variable Product creation with initial Variants
+- [x] Product + Variant creation wrapped in a MongoDB transaction
+- [x] Product created before its Variants
+- [x] Multiple Variants created within the same transaction
+- [x] Variant creation uses the newly-created Product ID
+- [x] Duplicate Variant combination detection during Product creation
+- [x] Duplicate SKU handling during Product creation
+- [x] Transaction rollback on duplicate Variant combination
+- [x] Transaction rollback on duplicate SKU
+- [x] Simple Product creation without Variants preserved
+- [x] Simple Product rejected when Variants are supplied
+- [x] Variable Product requires at least one Variant
+- [x] Nested Variant request validation added
+- [x] Variant price validation
+- [x] Variant stock validation
+- [x] Variant SKU validation
+- [x] Variant attributes validation
+- [x] Attribute name validation
+- [x] Attribute value validation
+- [x] Duplicate attribute-name validation
+- [x] Standalone Variant validation aligned with nested Variant validation
+
+### Transaction Testing
+
+- Variable Product + one Variant → 201 Created 
+- Variable Product + multiple Variants → 201 Created 
+- Duplicate Variant combination → 409 Conflict + complete rollback 
+- Duplicate SKU → 409 Conflict + complete rollback 
+- Simple Product without Variants → 201 Created 
+- Simple Product with Variants → 400 Bad Request 
+- Variable Product without Variants → 400 Bad Request 
+- Variable Product with empty Variants array → 400 Bad Request 
+- Invalid nested Variant fields → 400 Bad Request 
+- Numeric attribute value → accepted 
+- Boolean attribute value → accepted 
+- Duplicate attribute names → 400 Bad Request 
+
+### Result
+
+Product + Variant creation is now implemented and tested end-to-end.
+
+Variable Products are created together with their initial Variants inside a MongoDB transaction, preventing partially-created Products or Variants when a creation failure occurs.
+
+### Status
+
+Completed

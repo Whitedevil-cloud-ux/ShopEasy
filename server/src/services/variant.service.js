@@ -22,6 +22,57 @@ const generateVariationKey = (attributes) => {
     return JSON.stringify(normalizedAttributes);
 };
 
+const createVariantDocument = async({
+    productId,
+    sku,
+    attributes,
+    price,
+    stock,
+    session
+}) => {
+    const existingVariants = await Variant.find({ product: productId }).session(session);
+
+    const newVariationKey = generateVariationKey(attributes);
+
+    const duplicateVariant = existingVariants.some(existingVariant => {
+        const existingVariationKey = generateVariationKey(existingVariant.attributes);
+
+        return existingVariationKey === newVariationKey;
+    });
+
+    if(duplicateVariant) {
+        const error = new Error("Variant combination already exists");
+        error.statusCode = 409;
+        error.code = "DUPLICATE_VARIATION";
+
+        throw error;
+    }
+
+    const [variant] = await Variant.create(
+        [{
+            product: productId,
+            sku,
+            attributes,
+            price,
+            stock,
+        }],
+        {
+            session
+        }
+    );
+
+    return {
+        id: variant._id,
+        product: variant.product,
+        sku: variant.sku,
+        attributes: variant.attributes,
+        price: variant.price,
+        stock: variant.stock
+    };
+}
+
+
+
 const createVariant = async({
     productId,
     sku,
@@ -47,40 +98,13 @@ const createVariant = async({
         throw error;
     }
 
-    const existingVariants = await Variant.find({ product: productId });
-
-    const newVariationKey = generateVariationKey(attributes);
-
-    const duplicateVariant = existingVariants.some(existingVariant => {
-        const existingVariationKey = generateVariationKey(existingVariant.attributes);
-
-        return existingVariationKey === newVariationKey;
-    })
-
-    if(duplicateVariant) {
-        const error = new Error("Variant combination already exists");
-        error.statusCode = 409;
-        error.code = "DUPLICATE_VARIATION";
-
-        throw error;
-    }
-
-    const variant = await Variant.create({
-        product: productId,
+    return createVariantDocument({
+        productId,
         sku,
         attributes,
         price,
         stock
     });
-
-    return {
-        id: variant._id,
-        product: variant.product,
-        sku: variant.sku,
-        attributes: variant.attributes,
-        price: variant.price,
-        stock: variant.stock
-    };
 };
 
-module.exports = { createVariant };
+module.exports = { createVariant, createVariantDocument };
