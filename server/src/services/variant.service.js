@@ -107,4 +107,95 @@ const createVariant = async({
     });
 };
 
-module.exports = { createVariant, createVariantDocument };
+const updateVariant = async({
+    variantId,
+    sku,
+    attributes,
+    price,
+    stock,
+}) => {
+    const existingVariant = await Variant.findById(variantId);
+
+    if(!existingVariant) {
+        const error = new Error("Variant not found");
+        error.statusCode = 404;
+        error.code = "VARIANT_NOT_FOUND";
+
+        throw error;
+    }
+
+    const updateData = {};
+
+    if(sku !== undefined){
+        const existingSku = await Variant.findOne({ 
+            sku, 
+            _id: { $ne: variantId }
+        });
+
+        if (existingSku) {
+            const error = new Error("SKU already exists");
+            error.statusCode = 409;
+            error.code = "DUPLICATE_SKU";
+
+            throw error;
+        }
+
+        updateData.sku = sku;
+    }
+
+    if(attributes !== undefined) {
+        const newVariationKey = generateVariationKey(attributes);
+
+        const existingVariants = await Variant.find({
+            product: existingVariant.product,
+            _id: { $ne: variantId }
+        });
+
+        const duplicateVariant = existingVariants.some(existingVariant => {
+            const existingVariationKey = generateVariationKey(
+                existingVariant.attributes
+            );
+
+            return existingVariationKey === newVariationKey;
+        });
+
+        if(duplicateVariant) {
+            const error = new Error("Variant combination already exists");
+            error.statusCode = 409;
+            error.code = "DUPLICATE_VARIATION";
+
+            throw error;
+        }
+
+        updateData.attributes = attributes;
+    }
+
+    if(price !== undefined) {
+        updateData.price = price;
+    }
+
+    if(stock !== undefined) {
+        updateData.stock = stock;
+    }
+
+    if(Object.keys(updateData).length === 0){
+        const error = new Error("Update at least one field");
+        error.statusCode = 400;
+        error.code = "NO_FIELD_UPDATED";
+
+        throw error;
+    }
+
+    const newDetails = await Variant.findByIdAndUpdate(
+        variantId, 
+        updateData, 
+        { 
+            new: true,
+            runValidators: true
+        }
+    );
+
+    return newDetails;
+}
+
+module.exports = { createVariant, createVariantDocument, updateVariant };

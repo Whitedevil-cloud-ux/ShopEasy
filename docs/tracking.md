@@ -657,3 +657,50 @@ Variable Products are created together with their initial Variants inside a Mong
 ### Status
 
 Completed
+
+---
+
+## 2026-10-01 — Variant Update
+
+### Completed
+
+- [x] Added Variant update endpoint
+- [x] Added PATCH `/api/v1/variants/:id`
+- [x] Added Variant ID validation from route parameters
+- [x] Added optional SKU update
+- [x] Added optional attribute update
+- [x] Added optional price update
+- [x] Added optional stock update
+- [x] Prevented Product reassignment during Variant update
+- [x] Added global SKU duplicate detection
+- [x] Added duplicate Variant-combination detection
+- [x] Excluded the current Variant when checking duplicates
+- [x] Added empty PATCH protection
+- [x] Enabled Mongoose validators during updates with `runValidators: true`
+- [x] Restricted Variant updates to admin users
+
+### Variant Update Testing
+
+- Update price → 200 OK ✅
+- Update stock → 200 OK ✅
+- Update SKU → 200 OK ✅
+- Update attributes → 200 OK ✅
+- Duplicate SKU → 409 Conflict ✅
+- Duplicate Variant combination → 409 Conflict ✅
+- Invalid price → 400 Bad Request ✅
+- Invalid stock → 400 Bad Request ✅
+- Empty PATCH request → 400 Bad Request ✅
+- Nonexistent Variant → 404 Not Found ✅
+- Invalid Variant ID → 400 Bad Request ✅
+
+### Result
+
+Variant update is implemented and tested end-to-end.
+
+Only fields explicitly supplied in the PATCH request are updated.
+
+SKU uniqueness and Variant-combination uniqueness are enforced during updates.
+
+### Status
+
+Completed

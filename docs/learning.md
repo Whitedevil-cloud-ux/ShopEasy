@@ -849,3 +849,20 @@ Abort Transaction
 Rollback all changes
  ↓
 End Session
+
+---
+
+## 2026-10-01 — Variant Update
+
+### PATCH and Partial Updates
+
+Learned how PATCH can be used to update only the fields supplied by the client.
+
+For example:
+
+```json
+{
+    "stock": 35
+}
+
+```

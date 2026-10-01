@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 
 const variantValidator = [
     body("productId")
@@ -84,4 +84,90 @@ const variantValidator = [
 
 ]
 
-module.exports = { variantValidator };
+const updateVariantValidator = [
+    param("id")
+        .notEmpty()
+        .withMessage("Variant Id is required")
+        .isMongoId()
+        .withMessage("Variant ID must be a valid ID"),
+
+    body("sku")
+        .optional()
+        .trim()
+        .isString()
+        .withMessage("SKU must be a string")
+        .isLength({ min: 2 })
+        .withMessage("SKU must contain at least 2 characters")
+        .isLength({ max: 50 })
+        .withMessage("SKU can have maximum 50 characters"),
+
+    body("attributes")
+        .optional()
+        .isArray()
+        .withMessage("Attributes must be an array")
+        .isLength({ min: 1 })
+        .withMessage("Attributes must contain at least 1 item"),
+
+    body("attributes.*.name")
+    .trim()
+    .notEmpty()
+    .withMessage("Attribute name is required")
+    .isString()
+    .withMessage("Attribute name must be a string")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Attribute name must contain between 2 and 50 characters"),
+
+    body("attributes.*.value")
+        .custom((value) => {
+            if (typeof value === "string") {
+                if (value.trim().length === 0) {
+                    throw new Error("Attribute value cannot be empty");
+                }
+                return true;
+            }
+
+            if (typeof value === "number") {
+                if (!Number.isFinite(value)) {
+                    throw new Error("Attribute value must be a finite number");
+                }
+                return true;
+            }
+
+            if (typeof value === "boolean") {
+                return true;
+            }
+
+            throw new Error(
+                "Attribute value must be a non-empty string, finite number, or boolean"
+            );
+        }),
+
+    body("attributes")
+        .optional()
+        .custom((attributes) => {
+            const names = attributes.map(attribute =>
+                attribute.name.trim().toLowerCase()
+            );
+
+            const uniqueNames = new Set(names);
+
+            if (names.length !== uniqueNames.size) {
+                throw new Error("Attribute names must be unique within a variant");
+            }
+
+            return true;
+        }),
+
+    body("price")
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage("Price must be a positive integer (>=1)."),
+
+    body("stock")
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage("Stock must be a non-negative integer (>=0)."),
+
+]
+
+module.exports = { variantValidator, updateVariantValidator };

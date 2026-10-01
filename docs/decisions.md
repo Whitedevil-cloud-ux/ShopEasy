@@ -564,3 +564,41 @@ Abort Transaction
 Rollback Product + Variants
  ↓
 End Session
+
+
+---
+
+## 3. `decisions.md`
+
+Add this at the end:
+
+```md
+---
+
+## 2026-10-01 — Variant Update Decisions
+
+### Variant Product Relationship Is Immutable
+
+Decision:
+
+A Variant cannot be moved to another Product through the Variant update endpoint.
+
+Reason:
+
+A Variant represents a specific purchasable configuration belonging to a particular Product.
+
+Allowing the Product reference to change could create duplicate combinations in another Product and introduce additional inventory consistency problems.
+
+Therefore, the Variant update endpoint does not accept `product` as an updateable field.
+
+---
+
+### Variant Update Uses PATCH
+
+Decision:
+
+Variant updates use:
+
+```text
+PATCH /api/v1/variants/:id
+```
