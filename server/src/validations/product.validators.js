@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 
 const productValidator = [
     body("name")
@@ -195,4 +195,12 @@ const updateProductValidator = [
         .withMessage("Category must be valid Id"),
 ]
 
-module.exports = { productValidator, updateProductValidator };
+const productIdValidator = [
+    param("productId")
+        .notEmpty()
+        .withMessage("Product ID is required")
+        .isMongoId()
+        .withMessage("Product ID must be a valid ID"),
+]
+
+module.exports = { productValidator, updateProductValidator, productIdValidator };

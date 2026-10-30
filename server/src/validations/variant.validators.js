@@ -85,12 +85,6 @@ const variantValidator = [
 ]
 
 const updateVariantValidator = [
-    param("id")
-        .notEmpty()
-        .withMessage("Variant Id is required")
-        .isMongoId()
-        .withMessage("Variant ID must be a valid ID"),
-
     body("sku")
         .optional()
         .trim()
@@ -170,4 +164,12 @@ const updateVariantValidator = [
 
 ]
 
-module.exports = { variantValidator, updateVariantValidator };
+const variantIdValidator = [
+    param("id")
+        .notEmpty()
+        .withMessage("Variant ID is required")
+        .isMongoId()
+        .withMessage("Variant ID must be a valid ID"),
+];
+
+module.exports = { variantValidator, updateVariantValidator, variantIdValidator };

@@ -704,3 +704,42 @@ SKU uniqueness and Variant-combination uniqueness are enforced during updates.
 ### Status
 
 Completed
+
+## 2026-10-30 — Get Product Variants API
+
+### Completed
+
+- Implemented endpoint to retrieve all variants belonging to a Product.
+- Added route: `GET /api/v1/products/:productId/variants`.
+- Added `productIdValidator` to validate the Product ID.
+- Added `getProductVariants` to `variant.controller.js`.
+- Added `getProductVariants` to `variant.service.js`.
+- Verified that the Product exists before retrieving its variants.
+- Implemented retrieval using `Variant.find({ product: productId })`.
+- Applied authentication middleware.
+- Allowed authenticated users to retrieve variants without requiring the admin role.
+- Tested the endpoint using Postman.
+
+### Test Results
+
+| Test Case                         | Expected Status            | Result |
+| --------------------------------- | -------------------------- | ------ |
+| Existing Product with variants    | 200 OK                     | Passed |
+| Existing Product without variants | 200 OK with an empty array | Passed |
+| Nonexistent Product               | 404 Not Found              | Passed |
+| Missing authentication            | 401 Unauthorized           | Passed |
+| Normal authenticated user         | 200 OK                     | Passed |
+| Malformed Product ID              | 400 Bad Request            | Passed |
+
+### Current Status
+
+**Get Product Variants API: COMPLETED AND TESTED**
+
+Endpoint:
+`GET /api/v1/products/:productId/variants`
+
+### Next Session
+
+- Review the overall Variant implementation.
+- Update and verify project documentation.
+- Commit the completed changes to Git if they have not already been committed.

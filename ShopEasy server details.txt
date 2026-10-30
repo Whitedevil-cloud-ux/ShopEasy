@@ -123,3 +123,13 @@ body:
 }
 
 response: {success: false, statusCode: 400, message: Product type is simple} (This is working)
+
+
+// get variant by id
+method: get
+api: http://localhost:5000/api/v1/variants/:id
+
+// get all variants of a product
+method: get
+api: http://localhost:5000/api/v1/products/6a8d47b2d4212ec0a77e81c0/variants
+

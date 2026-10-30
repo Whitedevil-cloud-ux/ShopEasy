@@ -57,4 +57,52 @@ const updateVariant = async(req, res, next) => {
     }
 }
 
-module.exports = { registerVariant, updateVariant };
+const getVariantById = async(req, res, next) => {
+    try {
+        const variant = await variantService.getVariantById({
+            variantId: req.params.id,
+        });
+
+        logger.info("Variant retrieved successfully", {
+            requestId: req.requestId,
+            variantId: variant.id.toString(),
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Variant retrieved successfully",
+            statusCode: 200,
+            data: {
+                variant,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+const getProductVariants = async(req, res, next) => {
+    try {
+        const variants = await variantService.getProductVariants({
+            productId: req.params.productId,
+        });
+
+        logger.info("All variants retrieved successfully", {
+            requestId: req.requestId,
+            productId: req.params.productId,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "All variants are retrieved successfully",
+            statusCode: 200,
+            data: {
+                variants,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+module.exports = { registerVariant, updateVariant, getVariantById, getProductVariants };

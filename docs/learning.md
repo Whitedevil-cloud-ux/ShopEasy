@@ -866,3 +866,88 @@ For example:
 }
 
 ```
+
+## 2026-10-30 — Retrieving Product Variants
+
+### Learned
+
+#### 1. Nested Resource Routes
+
+Endpoint:
+
+`GET /api/v1/products/:productId/variants`
+
+This endpoint retrieves Variants belonging to a particular Product.
+
+The route expresses the relationship between the two resources: Product and Variant.
+
+#### 2. Controller-Service Separation
+
+The controller receives the request and passes the Product ID to the service.
+
+The service handles database queries and business rules.
+
+Flow:
+
+Request
+→ Route
+→ Authentication
+→ Validation
+→ Controller
+→ Service
+→ Product Model
+→ Variant Model
+→ Response
+
+#### 3. Checking Resource Existence
+
+A valid MongoDB ObjectId does not guarantee that a Product exists.
+
+The service first checks whether the Product exists using `Product.findById(productId)`.
+
+If it does not exist, the service throws a `404 Not Found` error with the code `PRODUCT_NOT_FOUND`.
+
+#### 4. Retrieving Related Documents
+
+The service uses:
+
+`Variant.find({ product: productId })`
+
+This query retrieves all Variant documents whose `product` field references the requested Product.
+
+Because `find()` returns an array, the result can contain multiple Variants or no Variants.
+
+#### 5. Empty Arrays and HTTP Status Codes
+
+If a Product exists but has no Variants, the endpoint returns `200 OK` with an empty array.
+
+This is different from `404 Not Found`, which indicates that the requested Product does not exist.
+
+#### 6. Authentication and Authorization
+
+Authentication verifies the user's identity.
+
+Authorization determines whether that user is allowed to perform an operation.
+
+The endpoint requires authentication but does not require the admin role because reading Variants is permitted for ordinary authenticated users.
+
+#### 7. Validation Before Controller Execution
+
+`productIdValidator` validates the `productId` path parameter.
+
+The validation middleware rejects malformed IDs with `400 Bad Request` before the controller executes.
+
+### Debugging Learned
+
+- A malformed MongoDB ObjectId should be rejected during request validation.
+- A valid ID that does not match an existing Product should produce a not-found error.
+- A logger must reference variables that actually exist in the current scope.
+- When a service returns an array, logging should use the Product ID or other relevant request metadata rather than assuming a single Variant object exists.
+
+### Important Mental Model
+
+**Valid ID ≠ Existing Resource**
+
+A request can contain a correctly formatted ObjectId that does not correspond to any document in MongoDB.
+
+Therefore, format validation and database existence checks serve different purposes.

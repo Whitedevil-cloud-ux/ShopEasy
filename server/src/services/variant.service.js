@@ -198,4 +198,38 @@ const updateVariant = async({
     return newDetails;
 }
 
-module.exports = { createVariant, createVariantDocument, updateVariant };
+const getVariantById = async({
+    variantId,
+}) => {
+    const existingVariant = await Variant.findById(variantId);
+
+    if(!existingVariant) {
+        const error = new Error("Variant not found");
+        error.statusCode = 404;
+        error.code = "VARIANT_NOT_FOUND";
+
+        throw error;
+    }
+
+    return existingVariant;
+}
+
+const getProductVariants = async({
+    productId,
+}) => {
+    const existingProduct = await Product.findById(productId);
+
+    if(!existingProduct){
+        const error = new Error("Product not found");
+        error.statusCode = 404;
+        error.code = "PRODUCT_NOT_FOUND";
+
+        throw error;
+    }
+
+    const allVariants = await Variant.find({ product: productId });
+
+    return allVariants;
+}
+
+module.exports = { createVariant, createVariantDocument, updateVariant, getVariantById, getProductVariants };

@@ -602,3 +602,81 @@ Variant updates use:
 ```text
 PATCH /api/v1/variants/:id
 ```
+
+## 2026-10-30 — Variant Retrieval API Decisions
+
+### Decision 1 — Use a Nested Product Route
+
+**Decision**
+
+Retrieve a Product's Variants through:
+
+`GET /api/v1/products/:productId/variants`
+
+**Reason**
+
+Variants belong to a Product. A nested route makes this relationship explicit and allows clients to request the Variants associated with a particular Product.
+
+### Decision 2 — Keep Variant Retrieval Logic in the Service Layer
+
+**Decision**
+
+The controller delegates retrieval to `variantService.getProductVariants()`.
+
+**Reason**
+
+- Keeps controllers focused on HTTP request and response handling.
+- Keeps database operations and business logic in the service layer.
+- Improves maintainability and separation of concerns.
+
+### Decision 3 — Verify Product Existence Before Retrieving Variants
+
+**Decision**
+
+The service checks whether the Product exists before querying the Variant collection.
+
+**Reason**
+
+A Product ID may be valid in format but may not reference an existing Product.
+
+**Expected behavior**
+
+- Invalid Product ID format: `400 Bad Request`.
+- Valid ID for a nonexistent Product: `404 Not Found`.
+- Existing Product: retrieve its Variants.
+
+### Decision 4 — Return an Empty Array When a Product Has No Variants
+
+**Decision**
+
+An existing Product without Variants returns `200 OK` with an empty array.
+
+**Reason**
+
+The Product exists, and the query completed successfully. An empty result does not mean the Product itself is missing.
+
+### Decision 5 — Allow Authenticated Users to Read Variants
+
+**Decision**
+
+The endpoint requires authentication but does not require the admin role.
+
+**Reason**
+
+Reading product information is permitted for ordinary authenticated users. Administrative privileges remain necessary for restricted Variant mutations.
+
+### Decision 6 — Validate the Product ID at the Route Level
+
+**Decision**
+
+Use the reusable `productIdValidator` before the controller executes.
+
+**Reason**
+
+- Rejects malformed IDs early.
+- Separates input validation from business logic.
+- Keeps route behavior consistent with other Product endpoints.
+
+### Status
+
+**Accepted and implemented.**
