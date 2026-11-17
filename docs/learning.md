@@ -951,3 +951,75 @@ The validation middleware rejects malformed IDs with `400 Bad Request` before th
 A request can contain a correctly formatted ObjectId that does not correspond to any document in MongoDB.
 
 Therefore, format validation and database existence checks serve different purposes.
+
+## 2026-11-17 — Learning: Delete Product Variant API
+
+### 1. Mongoose `findById()`
+
+Learned how to retrieve a Variant using its MongoDB document ID.
+
+```javascript
+const existingVariant = await Variant.findById(variantId);
+```
+
+The method returns the matching document or `null` if it doesn't exist.
+
+### 2. Understanding Document Relationships
+
+Learned how to retrieve the associated Product ID directly from the Variant document.
+
+```javascript
+const productId = existingVariant.product;
+```
+
+This avoids unnecessarily depending on a Product ID supplied by the client.
+
+### 3. Mongoose `countDocuments()`
+
+Learned that `countDocuments()` is more suitable than `find()` when only the number of matching documents is required.
+
+```javascript
+const remainingVariants = await Variant.countDocuments({
+    product: productId,
+    _id: { $ne: variantId }
+});
+```
+
+### 4. MongoDB `$ne` Operator
+
+Learned that `$ne` means "not equal".
+
+It allows us to exclude the current Variant while counting the other variants belonging to the same Product.
+
+### 5. Mongoose `findByIdAndDelete()`
+
+Learned how to delete a document using its ID and receive the deleted document in return.
+
+```javascript
+const deletedVariant = await Variant.findByIdAndDelete(variantId);
+```
+
+### 6. HTTP 409 Conflict
+
+Learned when to use `409 Conflict` for a business-rule violation.
+
+ShopEasy prevents deleting the last remaining Variant of a variable Product.
+
+### 7. Authentication vs Authorization
+
+Understood the difference between:
+
+- Authentication: Verifying whether the user is logged in.
+- Authorization: Verifying whether the authenticated user has permission to perform an operation.
+
+Only admins can delete Variants.
+
+### 8. Asynchronous Operations
+
+Learned why `await` is necessary when calling asynchronous Mongoose operations to obtain their resolved results.
+
+### 9. Important Engineering Consideration
+
+Identified a possible race condition when multiple Variant deletion requests execute simultaneously.
+
+The last-variant protection needs additional concurrency safeguards before being considered production-safe.

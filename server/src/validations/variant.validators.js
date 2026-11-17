@@ -172,4 +172,11 @@ const variantIdValidator = [
         .withMessage("Variant ID must be a valid ID"),
 ];
 
-module.exports = { variantValidator, updateVariantValidator, variantIdValidator };
+const deleteIdValidator = [
+    param("variantId")
+        .notEmpty()
+        .withMessage("Variant ID is required")
+        .isMongoId()
+        .withMessage("Variant ID must be a valid ID")
+];
+module.exports = { variantValidator, updateVariantValidator, variantIdValidator, deleteIdValidator };

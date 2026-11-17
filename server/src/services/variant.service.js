@@ -232,4 +232,47 @@ const getProductVariants = async({
     return allVariants;
 }
 
-module.exports = { createVariant, createVariantDocument, updateVariant, getVariantById, getProductVariants };
+const deleteVariant = async({ 
+    variantId,
+}) => {
+    const existingVariant = await Variant.findById(variantId);
+
+    if(!existingVariant){
+        const error = new Error("Variant not found");
+        error.statusCode = 404;
+        error.code = "VARIANT_NOT_FOUND";
+
+        throw error;
+    }
+
+    const productId = existingVariant.product;
+
+    const existingProduct = await Product.findById(productId);
+
+    if(!existingProduct){
+        const error = new Error("Product not found");
+        error.statusCode = 404;
+        error.code = "PRODUCT_NOT_FOUND";
+
+        throw error;
+    }
+
+    const remainingVariants = await Variant.countDocuments({
+        product: productId,
+        _id: { $ne: variantId }
+    });
+
+    if(remainingVariants === 0){
+        const error = new Error("Cannot delete the last variant of a variable product");
+        error.statusCode = 409;
+        error.code = "LAST_VARIANT_DELETION_NOT_ALLOWED";  
+
+        throw error;
+    }
+
+    const deletedVariant = await Variant.findByIdAndDelete(variantId);
+
+    return deletedVariant;
+}
+
+module.exports = { createVariant, createVariantDocument, updateVariant, getVariantById, getProductVariants, deleteVariant };

@@ -743,3 +743,45 @@ Endpoint:
 - Review the overall Variant implementation.
 - Update and verify project documentation.
 - Commit the completed changes to Git if they have not already been committed.
+
+## 2026-11-17 — Delete Product Variant API
+
+### Completed
+
+- [ ] Implemented the Delete Variant API.
+- [ ] Added endpoint: `DELETE /api/v1/variants/:variantId`.
+- [ ] Implemented `deleteVariant` in `variant.controller.js`.
+- [ ] Implemented `deleteVariant` in `variant.service.js`.
+- [ ] Added Variant ID validation using `deleteIdValidator`.
+- [ ] Applied authentication middleware.
+- [ ] Restricted Variant deletion to admin users.
+- [ ] Checked whether the requested Variant exists.
+- [ ] Retrieved the associated Product ID from the existing Variant.
+- [ ] Verified that the associated Product exists.
+- [ ] Used `Variant.countDocuments()` with `$ne` to count the remaining variants, excluding the current Variant.
+- [ ] Prevented deletion of the last remaining Variant of a variable Product.
+- [ ] Implemented deletion using `Variant.findByIdAndDelete()`.
+- [ ] Returned the deleted Variant in the success response.
+- [ ] Tested the endpoint successfully using Postman.
+
+### Test Results
+
+| Test Case                                                | Expected Status  | Result |
+| -------------------------------------------------------- | ---------------- | ------ |
+| Admin deletes a Variant with multiple variants available | 200 OK           | Passed |
+| Admin attempts to delete the last remaining Variant      | 409 Conflict     | Passed |
+| Nonexistent Variant ID                                   | 404 Not Found    | Passed |
+| Invalid Variant ID                                       | 400 Bad Request  | Passed |
+| Missing authentication                                   | 401 Unauthorized | Passed |
+| Normal user attempts Variant deletion                    | 403 Forbidden    | Passed |
+
+### Current Status
+
+**Delete Variant API: COMPLETED AND TESTED**
+
+Endpoint: `DELETE /api/v1/variants/:variantId`
+
+### Next Session
+
+- Commit and push the completed changes to GitHub.
+- Continue with the next ShopEasy feature: Product–Variant consistency and inventory management.

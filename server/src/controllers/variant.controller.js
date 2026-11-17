@@ -1,3 +1,4 @@
+const Variant = require("../models/Variants");
 const variantService = require("../services/variant.service");
 const logger = require("../utils/logger");
 
@@ -105,4 +106,28 @@ const getProductVariants = async(req, res, next) => {
     }
 }
 
-module.exports = { registerVariant, updateVariant, getVariantById, getProductVariants };
+const deleteVariant = async(req, res, next) => {
+    try {
+        const deletedVariant = await variantService.deleteVariant({
+            variantId: req.params.variantId,
+        });
+
+        logger.info("Variant deleted successfully", {
+            requestId: req.requestId,
+            variantId: req.params.variantId,
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Variant deleted successfully",
+            statusCode: 200,
+            data: {
+                deletedVariant,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+module.exports = { registerVariant, updateVariant, getVariantById, getProductVariants, deleteVariant };

@@ -680,3 +680,53 @@ Use the reusable `productIdValidator` before the controller executes.
 ### Status
 
 **Accepted and implemented.**
+
+## 2026-11-17 — Delete Variant Business Rules
+
+### Decision 1: Only Admins Can Delete Variants
+
+Variant deletion is restricted to authenticated admin users.
+
+**Reason:**
+Deleting product variants changes the product catalogue and inventory structure. Normal users should not have permission to perform this operation.
+
+### Decision 2: A Variable Product Must Have at Least One Variant
+
+The system must not allow deletion of the last remaining Variant belonging to a variable Product.
+
+**Implementation:**
+- Count the other variants belonging to the same Product.
+- Exclude the current Variant using MongoDB's `$ne` operator.
+- If no other variants exist, reject the deletion with `409 Conflict`.
+
+**Reason:**
+A variable Product must have at least one purchasable option.
+
+### Decision 3: Product ID Is Retrieved From the Variant
+
+The Product ID is obtained from the existing Variant document instead of accepting it separately from the client.
+
+**Reason:**
+Each Variant already contains a reference to its parent Product. Using this relationship avoids relying on potentially incorrect client-supplied Product IDs.
+
+### Decision 4: Use `findByIdAndDelete()` for Variant Deletion
+
+The system uses Mongoose's `findByIdAndDelete()` method.
+
+**Reason:**
+It deletes the Variant using its ID and returns the deleted document, allowing the API to include it in the success response.
+
+### Decision 5: Product Deletion Is a Separate Operation
+
+Deleting the last Variant must not automatically delete its parent Product.
+
+If an admin wants to remove the complete Product, that must be handled through a separate Product deletion operation.
+
+**Reason:**
+Variant deletion and Product deletion are separate administrative operations with different business consequences.
+
+### Future Improvement: Concurrent Variant Deletion
+
+The current last-variant validation can be affected by simultaneous deletion requests.
+
+Additional concurrency safeguards must be implemented to ensure that a variable Product cannot end up without variants due to concurrent operations.
