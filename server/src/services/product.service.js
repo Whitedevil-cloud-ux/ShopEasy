@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Category = require("../models/Category");
 const Product = require("../models/Product");
+const Variant = require("../models/Variants");
 const { createVariantDocument } = require("./variant.service");
 
 const createProduct = async({ 
@@ -163,18 +164,35 @@ const deleteProduct = async(productId) => {
         throw error;
     }
 
-    const product = await Product.findById(productId);
-    if(!product){
-        const error = new Error("Product not found");
-        error.statusCode = 404;
-        error.code = "PRODUCT_NOT_FOUND";
+    const session = await mongoose.startSession();
 
+    try {
+        session.startTransaction();
+        const product = await Product.findById(productId).session(session);
+        if(!product){
+            const error = new Error("Product not found");
+            error.statusCode = 404;
+            error.code = "PRODUCT_NOT_FOUND";
+
+            throw error;
+        }
+
+        // Delete all variants of the product
+        await Variant.deleteMany({ product: productId }, { session });
+
+        const deletedProduct = await Product.findByIdAndDelete( productId, {session});
+
+        await session.commitTransaction();
+
+        return deletedProduct;
+    } catch (error) {
+        if(session.inTransaction()){
+            await session.abortTransaction();
+        }
         throw error;
+    }finally {
+        await session.endSession();
     }
-
-    const deletedProduct = await Product.findByIdAndDelete(productId);
-
-    return deletedProduct;
 }
 
 module.exports = { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct };

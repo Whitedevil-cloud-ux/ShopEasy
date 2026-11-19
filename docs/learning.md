@@ -1023,3 +1023,36 @@ Learned why `await` is necessary when calling asynchronous Mongoose operations t
 Identified a possible race condition when multiple Variant deletion requests execute simultaneously.
 
 The last-variant protection needs additional concurrency safeguards before being considered production-safe.
+
+### Learning: MongoDB Transactions and Cascade Deletion (2026-11-19)
+
+**1. MongoDB Sessions**
+- A session provides the context for database operations participating in a transaction.
+- Mongoose creates a session using `mongoose.startSession()`.
+- The same session must be passed to all operations belonging to the transaction.
+- `session.endSession()` releases the session.
+
+**2. MongoDB Transactions**
+- `session.startTransaction()` starts a transaction.
+- `session.commitTransaction()` commits successful operations.
+- `session.abortTransaction()` aborts the transaction and rolls back its changes.
+- `session.inTransaction()` checks whether a transaction is active.
+
+**3. Atomicity**
+Atomicity means all operations in a transaction succeed together or none of their changes are committed.
+
+In ShopEasy:
+- Delete all associated Variants.
+- Delete the parent Product.
+- Commit both operations together.
+- If Product deletion fails after Variant deletion, abort the transaction to preserve the original database state.
+
+**4. Mongoose Queries**
+- `Variant.deleteMany({ product: productId }, { session })` deletes all Variants associated with a Product within the transaction.
+- `Product.findByIdAndDelete(productId, { session })` deletes the Product within the same transaction.
+- `deleteMany()` can successfully delete zero documents when no matching Variants exist.
+
+**5. Important distinction**
+Deleting an individual Variant has a business rule preventing deletion of the last Variant of a variable Product. Deleting the entire Product is different: all associated Variants can be deleted as part of the cascade operation.
+
+**Key takeaway:** Transactions protect database consistency when multiple related operations must succeed or fail together.

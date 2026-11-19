@@ -730,3 +730,30 @@ Variant deletion and Product deletion are separate administrative operations wit
 The current last-variant validation can be affected by simultaneous deletion requests.
 
 Additional concurrency safeguards must be implemented to ensure that a variable Product cannot end up without variants due to concurrent operations.
+
+### Decision: Transactional Cascade Deletion of Products (2026-11-19)
+
+**Decision:** Use MongoDB transactions to implement Product cascade deletion.
+
+**Chosen approach:**
+When an admin deletes a Product, all associated Variants are deleted first, followed by the Product, within the same MongoDB transaction.
+
+**Reasoning:**
+- A Product and its Variants are related database records.
+- Deleting the Product without deleting its Variants could leave orphaned Variant documents.
+- Independent deletion operations could leave inconsistent data if one operation succeeds and another fails.
+- A transaction ensures atomicity and protects database consistency.
+
+**Alternatives considered:**
+- Delete the Product without deleting Variants — rejected because it leaves orphaned records.
+- Delete Variants and Product independently — rejected because partial failure could cause inconsistency.
+
+**Implementation details:**
+- Use one MongoDB session for all transactional operations.
+- Commit only after all deletion operations succeed.
+- Abort on failure.
+- Close the session in `finally`.
+
+**Trade-off:** Transactions add some implementation complexity but provide stronger consistency guarantees.
+
+**Status:** Implemented and tested, including a simulated transaction failure.

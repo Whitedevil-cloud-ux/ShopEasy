@@ -785,3 +785,31 @@ Endpoint: `DELETE /api/v1/variants/:variantId`
 
 - Commit and push the completed changes to GitHub.
 - Continue with the next ShopEasy feature: Product–Variant consistency and inventory management.
+
+### Product Cascade Deletion — Completed (2026-11-19)
+
+**Feature:** Admin-only Product deletion with transactional cascade deletion of associated Variants.
+
+**Endpoint:** `DELETE /api/v1/products/:id`
+
+**Implementation completed:**
+- Reused the existing Product deletion endpoint and service.
+- Added MongoDB session and transaction handling.
+- Validated the Product ID before starting the transaction.
+- Verified Product existence using the transaction session.
+- Deleted all associated Variants using `Variant.deleteMany()` within the same session.
+- Deleted the Product using the same session.
+- Committed the transaction after successful deletion.
+- Aborted the transaction on failure.
+- Ensured session cleanup using `finally` and `session.endSession()`.
+
+**Testing completed:**
+1. Delete Product with multiple Variants — 200 OK.
+2. Delete Product without Variants — 200 OK.
+3. Delete nonexistent Product — 404 Not Found.
+4. Invalid Product ID — 400 Bad Request.
+5. Missing authentication token — 401 Unauthorized.
+6. Normal user attempts deletion — 403 Forbidden.
+7. Transaction rollback after simulated failure — 500 Internal Server Error; Product and both Variants remained intact.
+
+**Status:** Implementation and functional testing completed.

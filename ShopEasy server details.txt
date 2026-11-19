@@ -133,3 +133,7 @@ api: http://localhost:5000/api/v1/variants/:id
 method: get
 api: http://localhost:5000/api/v1/products/6a8d47b2d4212ec0a77e81c0/variants
 
+// delete variant by variant id
+method: delete
+api: http://localhost:5000/api/v1/variants/6aafb5f685a8c2e8cd09c012
+
