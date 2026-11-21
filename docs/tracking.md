@@ -813,3 +813,22 @@ Endpoint: `DELETE /api/v1/variants/:variantId`
 7. Transaction rollback after simulated failure — 500 Internal Server Error; Product and both Variants remained intact.
 
 **Status:** Implementation and functional testing completed.
+
+---
+
+## Product–Variant Consistency Review & Hardening
+**Date:** 21 November 2026  
+**Status:** Completed
+
+### Changes Implemented
+- **Blocked top-level `price` updates on `variable` products:** Updated `updateProduct` in `services/product.service.js` to reject `price` updates when `product.type === "variable"` with HTTP `400` (`VARIABLE_PRODUCT_PRICE_NOT_ALLOWED`).
+- **Fixed `category` update persistence:** Added missing `updateData.category = category` assignment inside `updateProduct` after verifying category existence.
+- **Enabled update schema validation:** Passed `runValidators: true` to `Product.findByIdAndUpdate()`.
+- **Schema-level consistency guard:** Added a `pre("validate")` hook in `models/Product.js` using `this.invalidate()` to prevent `variable` products from storing top-level `price` or `stock`.
+
+### Postman Tests Verified
+1. `PATCH /api/v1/products/:id` (variable product with `price`) → `400 Bad Request` (`VARIABLE_PRODUCT_PRICE_NOT_ALLOWED`).
+2. `PATCH /api/v1/products/:id` (simple product with `price`) → `200 OK`, price updated.
+3. `PATCH /api/v1/products/:id` (valid `category`) → `200 OK`, category updated.
+4. `PATCH /api/v1/products/:id` (non-existent `category`) → `404 Not Found` (`CATEGORY_NOT_FOUND`).
+5. `POST /api/v1/products` (valid variable product with `variants` array) → `201 Created` (regression check passed).

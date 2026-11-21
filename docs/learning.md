@@ -1056,3 +1056,11 @@ In ShopEasy:
 Deleting an individual Variant has a business rule preventing deletion of the last Variant of a variable Product. Deleting the entire Product is different: all associated Variants can be deleted as part of the cascade operation.
 
 **Key takeaway:** Transactions protect database consistency when multiple related operations must succeed or fail together.
+
+---
+
+## Product–Variant Consistency & Defense in Depth (21 November 2026)
+- **Validator vs. Service Layer Responsibilities:** Request validators (`express-validator`) only inspect incoming request payloads (`req.body`, `req.params`) and cannot query MongoDB. Business rules that depend on existing database state (such as checking `product.type` before allowing a `price` update) must live in the service layer.
+- **Defense in Depth Across Layers:** Enforcing domain rules across three layers—validator (HTTP input), service (business logic), and Mongoose schema hooks (`pre("validate")`)—ensures data integrity even if internal scripts or future services bypass HTTP routes.
+- **Mongoose `pre("validate")` & `this.invalidate()`:** Synchronous `pre("validate")` hooks run on document creation/saving (`this` refers to the document) and allow marking specific fields invalid with `this.invalidate(field, message)`.
+- **Mongoose Update Validators:** `findByIdAndUpdate` does not run schema validators unless `{ runValidators: true }` is explicitly passed in the options object.

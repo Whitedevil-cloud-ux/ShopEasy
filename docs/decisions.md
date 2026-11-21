@@ -757,3 +757,13 @@ When an admin deletes a Product, all associated Variants are deleted first, foll
 **Trade-off:** Transactions add some implementation complexity but provide stronger consistency guarantees.
 
 **Status:** Implemented and tested, including a simulated transaction failure.
+
+---
+
+## Enforce Single Source of Truth for Variable Product Pricing & Stock
+**Date:** 21 November 2026  
+**Context:** While `variable` products were blocked from having top-level `price` and `stock` during creation, `PATCH /api/v1/products/:id` and the Mongoose schema previously allowed a top-level `price` to be added later, creating conflicting price sources between a Product and its Variants.  
+**Decision:**
+1. Reject any `PATCH` request attempting to set `price` on a `variable` product with HTTP `400` (`VARIABLE_PRODUCT_PRICE_NOT_ALLOWED`) in `product.service.js`.
+2. Enforce a `pre("validate")` guard in `models/Product.js` so `variable` products can never store top-level `price` or `stock` at the schema level.  
+**Consequence:** Pricing and stock for `variable` products remain strictly owned by their `Variant` documents across all creation and update paths.

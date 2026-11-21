@@ -128,6 +128,13 @@ const updateProduct = async({ productId, name, description, price, category }) =
     }
 
     if(price !== undefined){
+        if(product.type === "variable"){
+            const error = new Error("Price cannot be updated for a variable product");
+            error.statusCode = 400;
+            error.code = "VARIABLE_PRODUCT_PRICE_NOT_ALLOWED"
+
+            throw error;
+        }
         updateData.price = price;
     }
 
@@ -140,6 +147,7 @@ const updateProduct = async({ productId, name, description, price, category }) =
 
             throw error;
         }
+        updateData.category = category;
     }
 
     if(Object.keys(updateData).length === 0){
@@ -150,7 +158,7 @@ const updateProduct = async({ productId, name, description, price, category }) =
         throw error;
     }
 
-    const newDetails = await Product.findByIdAndUpdate(productId, updateData, { new: true });
+    const newDetails = await Product.findByIdAndUpdate(productId, updateData, { new: true , runValidators: true });
 
     return newDetails;
 }

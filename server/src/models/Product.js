@@ -56,6 +56,18 @@ const productSchema = new mongoose.Schema(
     }
 )
 
+productSchema.pre("validate", function() {
+    if(this.type === "variable"){
+        if(this.price !== undefined){
+            this.invalidate("price", "Variable products cannot have a top-level price");
+        }
+
+        if(this.stock !== undefined){
+            this.invalidate("stock", "Variable products cannot have top-level stock");
+        }
+    }
+})
+
 const Product = mongoose.model("Product", productSchema);
 
 module.exports = Product;
