@@ -45,11 +45,28 @@ method: post
 api: http://localhost:5000/api/v1/products/ method: post
 Type: Variable
 body: {
-    "name": "Classic T-Shirt",
-    "description": "A comfortable cotton t-shirt for everyday wear",
+    "name": "Air Jordans",
+    "description": "The Air Jordan 1 started it all in 1985—bold leather, rebellious energy, and the silhouette that changed sneaker history forever",
     "type": "variable",
-    "category": "6a8d4720e8b0150501dc43d0"
+    "category": "6a8d4720e8b0150501dc43d0",
+    "variants": [
+        {
+            "sku": "AJ1-RED-42",
+            "attributes": [
+                {
+                    "name": "color", "value": "red"
+                },
+                {
+                    "name": "size", "value": 42
+                }
+            ],
+            "price": 35000,
+            "stock": 10
+        }
+    ]
 }
+
+Note: Hum variable product ka direct price and stock update nhi kr skte hai, jb bhi humein uska price and stock ko update krna hoga to hum us product ke particular variant ka price and stock update kr payenge. 
 
 Type: Simple
 body: {
@@ -58,7 +75,7 @@ body: {
 	"type": "simple",
 	"price": 2500,
 	"stock": 20,
-	"category: "6a8d4720e8b0150501dc43d0"
+	"category": "6a8d4720e8b0150501dc43d0"
 }
 
 // Get all products
@@ -136,4 +153,9 @@ api: http://localhost:5000/api/v1/products/6a8d47b2d4212ec0a77e81c0/variants
 // delete variant by variant id
 method: delete
 api: http://localhost:5000/api/v1/variants/6aafb5f685a8c2e8cd09c012
+
+
+Product Id: 6afedf27676ea96b4b4cceca
+Variant Id: 6afedfdd676ea96b4b4ccece
+
 
