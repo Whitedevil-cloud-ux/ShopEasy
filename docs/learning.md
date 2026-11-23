@@ -1064,3 +1064,17 @@ Deleting an individual Variant has a business rule preventing deletion of the la
 - **Defense in Depth Across Layers:** Enforcing domain rules across three layers—validator (HTTP input), service (business logic), and Mongoose schema hooks (`pre("validate")`)—ensures data integrity even if internal scripts or future services bypass HTTP routes.
 - **Mongoose `pre("validate")` & `this.invalidate()`:** Synchronous `pre("validate")` hooks run on document creation/saving (`this` refers to the document) and allow marking specific fields invalid with `this.invalidate(field, message)`.
 - **Mongoose Update Validators:** `findByIdAndUpdate` does not run schema validators unless `{ runValidators: true }` is explicitly passed in the options object.
+
+**Date:** 23 November 2026
+
+## Priority 2: Inventory Management — Key Learnings
+
+1. **Race Conditions & Atomic Operations (`$inc` + `$gte`):**
+   - Learned why a traditional `findById()` -> `if (stock >= qty)` -> `save()` flow fails under concurrent traffic and how MongoDB's single-document atomic `findOneAndUpdate` solves both race conditions and negative stock in one query.
+2. **Lost Update Problem (`$inc` vs. `$set`):**
+   - Understood why admin inventory adjustments should apply relative deltas (`+10` / `-3`) instead of overwriting absolute stock numbers while live orders are occurring.
+3. **Composable Transaction Sessions:**
+   - Learned that low-level service helpers (`deductStock`, `restoreStock`) should accept a `session` parameter from the caller rather than calling `mongoose.startSession()` themselves, so multiple operations can share one rollback boundary.
+4. **Mongoose Query Signatures & Type Checks:**
+   - Reinforced the difference between `findByIdAndUpdate(id, update, options)` (takes an ID directly) and `findOneAndUpdate(filter, update, options)` (takes a filter object).
+   - Practiced strict runtime type validation (`!Number.isInteger(value) || value === 0`) to prevent string-coerced numbers or zero-delta requests from slipping past HTTP body parsing.

@@ -832,3 +832,25 @@ Endpoint: `DELETE /api/v1/variants/:variantId`
 3. `PATCH /api/v1/products/:id` (valid `category`) → `200 OK`, category updated.
 4. `PATCH /api/v1/products/:id` (non-existent `category`) → `404 Not Found` (`CATEGORY_NOT_FOUND`).
 5. `POST /api/v1/products` (valid variable product with `variants` array) → `201 Created` (regression check passed).
+
+**Date:** 23 November 2026
+**Status:** Completed
+
+## Priority 2: Inventory Management — Completed
+
+- [x] **Inventory Domain Design:** Finalized stock ownership rules (`Product.stock` for `simple` products, `Variant.stock` for `variable` products) and relative delta adjustments (`+` / `-`) to prevent lost updates.
+- [x] **`services/inventory.service.js`:**
+  - [x] `deductStock`: Atomic conditional decrement (`stock: { $gte: quantity }`, `$inc: { stock: -quantity }`) with MongoDB `session` support.
+  - [x] `restoreStock`: Atomic stock restoration (`$inc: { stock: quantity }`) with MongoDB `session` support for order cancellations/failures.
+  - [x] `adjustStock`: Admin relative stock adjustment (`+` restock / `-` shrinkage) with `minRequiredStock` floor guard to prevent negative inventory.
+  - [x] `checkAvailability`: Non-mutating stock verification returning `{ available, availableStock, requestedQuantity }`.
+- [x] **HTTP Layer & Validation:**
+  - [x] Created `validations/inventory.validators.js` (validating `productId`, optional `variantId`, and non-zero integer `quantityChange`).
+  - [x] Created `controllers/inventory.controller.js` (`adjustInventoryStock`).
+  - [x] Created `routes/inventory.routes.js` (`PATCH /api/v1/inventory/adjust`) protected by `authMiddleware` + `verifyRole(["admin"])`.
+- [x] **Postman Verification:** Verified simple restock (`+10`), simple deduction (`-3`), variable variant restock (`+5`), negative stock rejection (`409 INSUFFICIENT_STOCK`), missing variant ID on variable product (`400`), and zero/string quantity rejection (`400`).
+
+## Next Up: Priority 3 — Shopping Cart System
+- [ ] `models/Cart.js` (One cart per user, live price calculation at read/checkout)
+- [ ] `services/cart.service.js` (Add/merge items, update quantity, remove item, clear cart)
+- [ ] Cart validators, controller, routes, and Postman tests

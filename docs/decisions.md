@@ -767,3 +767,24 @@ When an admin deletes a Product, all associated Variants are deleted first, foll
 1. Reject any `PATCH` request attempting to set `price` on a `variable` product with HTTP `400` (`VARIABLE_PRODUCT_PRICE_NOT_ALLOWED`) in `product.service.js`.
 2. Enforce a `pre("validate")` guard in `models/Product.js` so `variable` products can never store top-level `price` or `stock` at the schema level.  
 **Consequence:** Pricing and stock for `variable` products remain strictly owned by their `Variant` documents across all creation and update paths.
+
+**Date:** 23 November 2026
+## ADR-006: Dedicated Inventory Service (`inventory.service.js`)
+- **Context:** Stock updates are needed across multiple modules (Admin manual restocks, Shopping Cart availability checks, Order checkout deductions, and Order cancellation restorations).
+- **Decision:** Centralized all inventory logic into `services/inventory.service.js` rather than embedding stock mutations inside `product.service.js` or controllers.
+- **Consequences:** Single source of truth for stock ownership (`Product` vs. `Variant`) and variant-product ownership verification; reusable across future Cart, Order, and Payment workflows.
+
+## ADR-007: Atomic Conditional `$inc` Over Read-Then-Write
+- **Context:** Concurrent checkout requests on low-stock items can cause a race condition where two requests read `stock: 1` simultaneously and both decrement stock, resulting in `-1` inventory.
+- **Decision:** Used MongoDB atomic `findOneAndUpdate` with a conditional filter (`{ _id, stock: { $gte: quantity } }`) combined with `$inc`.
+- **Consequences:** Eliminates race conditions and guarantees stock can never drop below `0` at the database level without requiring pessimistic locks.
+
+## ADR-008: Relative Delta Adjustments (`quantityChange`) Over Absolute Overwrites
+- **Context:** If an admin overwrites stock with an absolute number (`$set: { stock: 20 }`) at the exact moment a customer places an order, the customer's deduction is overwritten (Lost Update Problem).
+- **Decision:** Implemented `adjustStock` using relative integer deltas (`+10` or `-3`) via `$inc`, using `minRequiredStock = quantityChange < 0 ? Math.abs(quantityChange) : 0` to guard negative adjustments.
+- **Consequences:** Concurrent customer orders and admin warehouse updates commute accurately without losing stock counts.
+
+## ADR-009: Caller-Managed MongoDB Transactions for Stock Operations
+- **Context:** `deductStock` and `restoreStock` will be invoked inside multi-document Order transactions.
+- **Decision:** Accepted an optional `session` parameter in `deductStock` and `restoreStock` instead of starting internal sessions inside the inventory helpers.
+- **Consequences:** Allows the orchestrating service (`order.service.js`) to wrap order creation/cancellation and multiple item stock mutations inside a single atomic transaction.
